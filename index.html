@@ -52,6 +52,20 @@
     .suite-links a{ font-size:15px; padding:14px 16px; }
     .suite-links a.active{ border-color:transparent; }
   }
+  .suite-right{ display:flex; align-items:center; gap:8px; }
+  .theme-toggle{ background:none; border:1px solid var(--suite-border); color:var(--suite-text);
+        cursor:pointer; font-size:15px; line-height:1; padding:7px 10px; border-radius:8px; transition:all .15s ease; }
+  .theme-toggle:hover{ background:var(--suite-bar2); }
+  /* ===== Light mode ===== */
+  body.light{ --suite-bg:#f4f6fb; --suite-bar:#ffffff; --suite-bar2:#eef2f8;
+        --suite-border:#d8dee9; --suite-text:#1e293b; --suite-dim:#475569; }
+  body.light #panel-converter, body.light #panel-extractor, body.light #panel-rincianharian{
+        --bg:#f4f6fb; --bg2:#ffffff; --bg3:#eef2f8; --border:#dbe2ec; --border-bright:#c2ccda;
+        --text:#1e293b; --text-dim:#5b6776; --text-mid:#475569;
+        --amber-glow:rgba(245,158,11,0.10); --amber-glow2:rgba(245,158,11,0.18); }
+  body.light #panel-do{ --bg-primary:#f4f6fb; --bg-secondary:#ffffff; --bg-tertiary:#eef2f8;
+        --text-primary:#1e293b; --text-secondary:#5b6776; --border-color:#dbe2ec; --border-bright:#c2ccda;
+        --card-shadow:0 10px 24px -8px rgba(15,23,42,0.15), 0 6px 10px -8px rgba(15,23,42,0.12); }
 </style>
 <!-- ===== Per-app styles, each scoped to its own panel ===== -->
   <style data-app="converter">
@@ -1225,13 +1239,16 @@
 <body>
   <nav class="suite-nav">
     <div class="suite-brand"><span class="dot"></span>Jansen's Tool Suite</div>
-    <div class="suite-links" id="suiteLinks">
+    <div class="suite-right">
+      <div class="suite-links" id="suiteLinks">
       <a data-app="converter" class="active">Fleet Card Converter</a>
       <a data-app="do">DO Extractor</a>
       <a data-app="extractor">Data → Table</a>
       <a data-app="rincianharian">Rincian Harian</a>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Switch theme">🌙</button>
+      <button class="suite-burger" id="suiteBurger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
     </div>
-    <button class="suite-burger" id="suiteBurger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   </nav>
 
   <main class="suite-main">
@@ -1247,7 +1264,7 @@
         <p>TXT Report → Excel Spreadsheet</p>
       </div>
     </div>
-    <div class="badge">DARK MODE</div>
+    <div class="badge"><span class="js-mode">DARK MODE</span></div>
   </header>
 
   <div class="upload-zone" id="uploadZone">
@@ -1335,7 +1352,7 @@
                 <p>Ekstrak dan kelola data Nopol, Jenis Mobil, dan Lokasi Klien dari log pengiriman</p>
             </div>
             <div>
-                <span class="badge badge-info"><i class="fa-solid fa-code"></i> Single HTML Utility</span>
+                <span class="badge badge-info"><i class="fa-solid fa-circle-half-stroke"></i> <span class="js-mode">DARK MODE</span></span>
             </div>
         </header>
 
@@ -1472,7 +1489,7 @@ B 8871 YZ - Traga - Gudang Sunter"></textarea>
                     <p>JSON · Excel · Google Sheets → Rincian Table</p>
                 </div>
             </div>
-            <div class="badge">DARK MODE</div>
+            <div class="badge"><span class="js-mode">DARK MODE</span></div>
         </div>
 
         <div class="content">
@@ -1701,7 +1718,7 @@ MAMAD - GUNAWAN    - RS PREMIER BINTARO            Tol    Rp230,000"></textarea>
         <p>Pengangkutan &amp; Insentif TXT → Tabel Terstruktur</p>
       </div>
     </div>
-    <div class="badge">DARK MODE</div>
+    <div class="badge"><span class="js-mode">DARK MODE</span></div>
   </header>
 
   <div class="card">
@@ -1769,6 +1786,25 @@ MAMAD - GUNAWAN    - RS PREMIER BINTARO            Tol    Rp230,000"></textarea>
         var a = e.target.closest('a[data-app]'); if(!a) return; e.preventDefault(); show(a.dataset.app);
       });
       burger.addEventListener('click', function(){ links.classList.toggle('open'); burger.classList.toggle('open'); });
+    })();
+
+    /* ===== Theme toggle (light / dark) ===== */
+    (function(){
+      var KEY='suite-theme';
+      var btn=document.getElementById('themeToggle');
+      function apply(light){
+        document.body.classList.toggle('light', light);
+        if(btn){ btn.textContent = light ? '☀️' : '🌙';
+                 btn.setAttribute('aria-label', light ? 'Switch to dark mode' : 'Switch to light mode'); }
+        document.querySelectorAll('.js-mode').forEach(function(s){ s.textContent = light ? 'LIGHT MODE' : 'DARK MODE'; });
+      }
+      var saved=null; try{ saved=localStorage.getItem(KEY); }catch(e){}
+      apply(saved==='light');
+      if(btn) btn.addEventListener('click', function(){
+        var light=!document.body.classList.contains('light');
+        apply(light);
+        try{ localStorage.setItem(KEY, light?'light':'dark'); }catch(e){}
+      });
     })();
   </script>
 
