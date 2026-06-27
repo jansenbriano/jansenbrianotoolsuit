@@ -7,227 +7,3662 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Shared libraries, loaded once for the whole suite -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 <style>
-  :root{
-    --bg:#0d0f12;
-    --bg-2:#13161b;
-    --bg-3:#1a1e26;
-    --border:#262b34;
-    --text:#e7e9ee;
-    --text-dim:#94a3b8;
-    --accent:#fbbf24;
-    --accent-2:#f59e0b;
-    --nav-h:60px;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html,body{height:100%;}
-  body{
-    font-family:'IBM Plex Sans',system-ui,sans-serif;
-    background:var(--bg);
-    color:var(--text);
-    display:flex;
-    flex-direction:column;
-    overflow:hidden;
-  }
-
-  /* ===== Navbar ===== */
-  .nav{
-    height:var(--nav-h);
-    flex:0 0 auto;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 18px;
-    background:var(--bg-2);
-    border-bottom:1px solid var(--border);
-    position:relative;
-    z-index:50;
-  }
-  .brand{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-weight:600;
-    font-size:16px;
-    letter-spacing:.3px;
-    white-space:nowrap;
-  }
-  .brand .dot{
-    width:11px;height:11px;border-radius:3px;
-    background:var(--accent);
-    box-shadow:0 0 12px rgba(251,191,36,.6);
-  }
-  .brand small{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11px;
-    color:var(--text-dim);
-    font-weight:400;
-  }
-
-  .links{
-    display:flex;
-    align-items:center;
-    gap:4px;
-  }
-  .links a{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:13px;
-    color:var(--text-dim);
-    text-decoration:none;
-    padding:9px 14px;
-    border-radius:8px;
-    border:1px solid transparent;
-    transition:all .15s ease;
-    white-space:nowrap;
-  }
-  .links a:hover{
-    color:var(--text);
-    background:var(--bg-3);
-  }
-  .links a.active{
-    color:var(--accent);
-    background:var(--bg-3);
-    border-color:var(--border);
-  }
-
-  /* hamburger */
-  .burger{
-    display:none;
-    flex-direction:column;
-    gap:5px;
-    background:none;border:none;cursor:pointer;
-    padding:8px;border-radius:8px;
-  }
-  .burger:hover{background:var(--bg-3);}
-  .burger span{
-    width:22px;height:2px;background:var(--text);
-    border-radius:2px;transition:.25s;
-  }
-  .burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
-  .burger.open span:nth-child(2){opacity:0;}
-  .burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
-
-  /* ===== Frame area ===== */
-  .frame-wrap{
-    flex:1 1 auto;
-    position:relative;
-    min-height:0;
-  }
-  iframe{
-    border:0;
-    width:100%;
-    height:100%;
-    display:none;
-    background:var(--bg);
-  }
-  iframe.active{display:block;}
-
-  /* ===== Mobile ===== */
+  :root{ --suite-bg:#0d0f12; --suite-bar:#13161b; --suite-bar2:#1a1e26; --suite-border:#262b34;
+         --suite-text:#e7e9ee; --suite-dim:#94a3b8; --suite-accent:#fbbf24; --suite-nav-h:60px; }
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; margin:0; }
+  body{ font-family:'IBM Plex Sans',system-ui,sans-serif; background:var(--suite-bg);
+        color:var(--suite-text); display:flex; flex-direction:column; overflow:hidden; }
+  .suite-nav{ height:var(--suite-nav-h); flex:0 0 auto; display:flex; align-items:center;
+        justify-content:space-between; padding:0 18px; background:var(--suite-bar);
+        border-bottom:1px solid var(--suite-border); position:relative; z-index:50; }
+  .suite-brand{ display:flex; align-items:center; gap:10px; font-weight:600; font-size:16px;
+        letter-spacing:.3px; white-space:nowrap; }
+  .suite-brand .dot{ width:11px; height:11px; border-radius:3px; background:var(--suite-accent);
+        box-shadow:0 0 12px rgba(251,191,36,.6); }
+  .suite-links{ display:flex; align-items:center; gap:4px; }
+  .suite-links a{ font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--suite-dim);
+        text-decoration:none; cursor:pointer; padding:9px 14px; border-radius:8px;
+        border:1px solid transparent; transition:all .15s ease; white-space:nowrap; }
+  .suite-links a:hover{ color:var(--suite-text); background:var(--suite-bar2); }
+  .suite-links a.active{ color:var(--suite-accent); background:var(--suite-bar2); border-color:var(--suite-border); }
+  .suite-burger{ display:none; flex-direction:column; gap:5px; background:none; border:none;
+        cursor:pointer; padding:8px; border-radius:8px; }
+  .suite-burger:hover{ background:var(--suite-bar2); }
+  .suite-burger span{ width:22px; height:2px; background:var(--suite-text); border-radius:2px; transition:.25s; }
+  .suite-burger.open span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+  .suite-burger.open span:nth-child(2){ opacity:0; }
+  .suite-burger.open span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+  .suite-main{ flex:1 1 auto; position:relative; min-height:0; }
+  .panel{ display:none; height:100%; overflow:auto; }
+  .panel.active{ display:block; }
   @media (max-width:900px){
-    .burger{display:flex;}
-    .brand small{display:none;}
-    .links{
-      position:absolute;
-      top:var(--nav-h);
-      left:0;right:0;
-      flex-direction:column;
-      align-items:stretch;
-      gap:0;
-      background:var(--bg-2);
-      border-bottom:1px solid var(--border);
-      padding:8px;
-      transform:translateY(-12px);
-      opacity:0;
-      pointer-events:none;
-      transition:.2s ease;
-      box-shadow:0 16px 30px rgba(0,0,0,.5);
-    }
-    .links.open{
-      transform:translateY(0);
-      opacity:1;
-      pointer-events:auto;
-    }
-    .links a{
-      font-size:15px;
-      padding:14px 16px;
-      border-radius:8px;
-    }
-    .links a.active{border-color:transparent;}
+    .suite-burger{ display:flex; }
+    .suite-links{ position:absolute; top:var(--suite-nav-h); left:0; right:0; flex-direction:column;
+        align-items:stretch; gap:0; background:var(--suite-bar); border-bottom:1px solid var(--suite-border);
+        padding:8px; transform:translateY(-12px); opacity:0; pointer-events:none; transition:.2s ease;
+        box-shadow:0 16px 30px rgba(0,0,0,.5); }
+    .suite-links.open{ transform:translateY(0); opacity:1; pointer-events:auto; }
+    .suite-links a{ font-size:15px; padding:14px 16px; }
+    .suite-links a.active{ border-color:transparent; }
   }
 </style>
+<!-- ===== Per-app styles, each scoped to its own panel ===== -->
+  <style data-app="converter">
+
+    #panel-converter {
+      --bg: #0d0f12;
+      --bg2: #13161b;
+      --bg3: #1a1e26;
+      --border: #252a35;
+      --border-bright: #2f3645;
+      --amber: #f59e0b;
+      --amber-dim: #b45309;
+      --amber-glow: rgba(245,158,11,0.08);
+      --amber-glow2: rgba(245,158,11,0.15);
+      --text: #e2e8f0;
+      --text-dim: #64748b;
+      --text-mid: #94a3b8;
+      --green: #10b981;
+      --red: #ef4444;
+      --blue: #60a5fa;
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'IBM Plex Sans', sans-serif;
+    }
+    #panel-converter * { box-sizing: border-box; margin: 0; padding: 0; }
+    #panel-converter { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; padding: 32px 24px; }
+    #panel-converter::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(245,158,11,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(245,158,11,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none; z-index: 0;
+    }
+    #panel-converter .wrapper { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; }
+    #panel-converter header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 36px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+    #panel-converter .logo-group { display: flex; align-items: center; gap: 14px; }
+    #panel-converter .logo-icon { width: 44px; height: 44px; background: var(--amber-glow2); border: 1px solid var(--amber-dim); border-radius: 8px; display: grid; place-items: center; font-family: var(--mono); color: var(--amber); font-size: 20px; font-weight: 600; flex-shrink: 0; }
+    #panel-converter .logo-text h1 { font-size: 20px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; }
+    #panel-converter .logo-text p { font-size: 12px; color: var(--text-dim); font-family: var(--mono); margin-top: 2px; }
+    #panel-converter .badge { font-family: var(--mono); font-size: 11px; color: var(--amber); background: var(--amber-glow); border: 1px solid var(--amber-dim); padding: 4px 10px; border-radius: 4px; letter-spacing: 0.5px; }
+    #panel-converter .upload-zone { border: 2px dashed var(--border-bright); border-radius: 12px; padding: 52px 32px; text-align: center; cursor: pointer; transition: all 0.2s ease; background: var(--bg2); position: relative; overflow: hidden; }
+    #panel-converter .upload-zone::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, var(--amber-glow) 0%, transparent 70%); opacity: 0; transition: opacity 0.3s; }
+    #panel-converter .upload-zone:hover, #panel-converter .upload-zone.dragover { border-color: var(--amber-dim); background: var(--bg3); }
+    #panel-converter .upload-zone:hover::before, #panel-converter .upload-zone.dragover::before { opacity: 1; }
+    #panel-converter .upload-zone.dragover { border-color: var(--amber); }
+    #panel-converter .upload-icon { font-size: 40px; margin-bottom: 14px; display: block; position: relative; z-index: 1; }
+    #panel-converter .upload-title { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 6px; position: relative; z-index: 1; }
+    #panel-converter .upload-sub { font-size: 13px; color: var(--text-dim); font-family: var(--mono); position: relative; z-index: 1; }
+    #panel-converter .upload-zone.has-file { border-color: var(--green); border-style: solid; }
+    #panel-converter .upload-zone.has-file::before { background: radial-gradient(ellipse at center, rgba(16,185,129,0.05) 0%, transparent 70%); opacity: 1; }
+    #panel-converter .file-info { display: flex; align-items: center; justify-content: center; gap: 10px; position: relative; z-index: 1; }
+    #panel-converter .file-name { font-family: var(--mono); font-size: 14px; color: var(--green); font-weight: 500; }
+    #panel-converter .file-size { font-family: var(--mono); font-size: 12px; color: var(--text-dim); }
+    #panel-converter #fileInput { display: none; }
+    #panel-converter .controls { display: flex; gap: 12px; margin-top: 20px; align-items: center; flex-wrap: wrap; }
+    #panel-converter button { font-family: var(--sans); font-weight: 500; cursor: pointer; border: none; border-radius: 8px; transition: all 0.15s ease; display: flex; align-items: center; gap: 8px; }
+    #panel-converter .btn-primary { background: var(--amber); color: #000; padding: 12px 24px; font-size: 14px; }
+    #panel-converter .btn-primary:hover { background: #fbbf24; transform: translateY(-1px); }
+    #panel-converter .btn-primary:disabled { background: var(--border-bright); color: var(--text-dim); cursor: not-allowed; transform: none; }
+    #panel-converter .btn-download { background: var(--bg3); color: var(--green); border: 1px solid rgba(16,185,129,0.3); padding: 12px 24px; font-size: 14px; }
+    #panel-converter .btn-download:hover { background: rgba(16,185,129,0.1); border-color: var(--green); transform: translateY(-1px); }
+    #panel-converter .btn-download:disabled { color: var(--text-dim); border-color: var(--border); cursor: not-allowed; transform: none; }
+    #panel-converter .btn-copy { background: var(--bg3); color: var(--blue); border: 1px solid rgba(96,165,250,0.3); padding: 12px 24px; font-size: 14px; }
+    #panel-converter .btn-copy:hover { background: rgba(96,165,250,0.1); border-color: var(--blue); transform: translateY(-1px); }
+    #panel-converter .btn-copy:disabled { color: var(--text-dim); border-color: var(--border); cursor: not-allowed; transform: none; }
+    #panel-converter .file-list { display: none; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 14px; position: relative; z-index: 1; }
+    #panel-converter .file-list.visible { display: flex; }
+    #panel-converter .file-chip { font-family: var(--mono); font-size: 11px; color: var(--text-mid); background: var(--bg); border: 1px solid var(--border); padding: 4px 10px; border-radius: 4px; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #panel-converter .file-chip .idx { color: var(--amber); margin-right: 6px; }
+    #panel-converter .btn-reset { background: var(--bg3); color: var(--text-dim); border: 1px solid var(--border); padding: 12px 16px; font-size: 14px; }
+    #panel-converter .btn-reset:hover { border-color: var(--border-bright); color: var(--text); }
+    #panel-converter .stats-bar { display: none; gap: 20px; padding: 14px 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; margin-top: 20px; align-items: center; flex-wrap: wrap; }
+    #panel-converter .stats-bar.visible { display: flex; }
+    #panel-converter .stat { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+    #panel-converter .stat-label { color: var(--text-dim); font-family: var(--mono); }
+    #panel-converter .stat-val { color: var(--amber); font-weight: 600; font-family: var(--mono); }
+    #panel-converter .stat-sep { color: var(--border-bright); }
+    #panel-converter .instructions { margin-top: 16px; padding: 14px 18px; background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--amber-dim); border-radius: 8px; }
+    #panel-converter .instructions p { font-size: 12px; color: var(--text-dim); font-family: var(--mono); line-height: 1.9; }
+    #panel-converter .instructions strong { color: var(--amber); }
+    #panel-converter .preview-section { margin-top: 32px; display: none; }
+    #panel-converter .preview-section.visible { display: block; }
+    #panel-converter .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    #panel-converter .section-title { font-family: var(--mono); font-size: 13px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; }
+    #panel-converter .row-count { font-family: var(--mono); font-size: 12px; color: var(--text-dim); background: var(--bg3); padding: 3px 10px; border-radius: 4px; border: 1px solid var(--border); }
+    #panel-converter .table-scroll { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+    #panel-converter table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    #panel-converter thead tr { background: var(--bg3); border-bottom: 1px solid var(--border-bright); }
+    #panel-converter th { padding: 12px 14px; text-align: left; font-family: var(--mono); font-size: 11px; color: var(--amber); font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; }
+    #panel-converter tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    #panel-converter tbody tr:last-child { border-bottom: none; }
+    #panel-converter tbody tr:hover { background: rgba(255,255,255,0.02); }
+    #panel-converter tbody tr.group-odd { background: rgba(245,158,11,0.018); }
+    #panel-converter tbody tr.group-odd:hover { background: rgba(245,158,11,0.04); }
+    #panel-converter tr.name-divider td { border-top: 2px solid var(--border-bright); }
+    #panel-converter td { padding: 10px 14px; color: var(--text); vertical-align: top; white-space: nowrap; }
+    #panel-converter td.col-no { font-family: var(--mono); font-size: 12px; color: var(--text-dim); text-align: right; width: 48px; }
+    #panel-converter td.col-card { font-family: var(--mono); font-size: 12px; color: var(--blue); }
+    #panel-converter td.col-name { font-weight: 500; max-width: 200px; white-space: normal; }
+    #panel-converter td.col-time { font-family: var(--mono); font-size: 12px; color: var(--text-mid); }
+    #panel-converter td.col-nominal { font-family: var(--mono); font-weight: 600; color: var(--amber); text-align: right; }
+    #panel-converter td.col-location { max-width: 300px; white-space: normal; font-size: 12px; color: var(--text-mid); }
+    #panel-converter td.col-jenis { font-family: var(--mono); font-size: 11px; color: var(--text-mid); }
+    #panel-converter .toast { position: fixed; bottom: 28px; right: 28px; background: var(--bg3); border: 1px solid var(--green); color: var(--green); padding: 12px 20px; border-radius: 8px; font-size: 14px; font-family: var(--mono); opacity: 0; transform: translateY(12px); transition: all 0.25s ease; pointer-events: none; z-index: 99; max-width: 380px; }
+    #panel-converter .toast.show { opacity: 1; transform: translateY(0); }
+    #panel-converter .toast.error { border-color: var(--red); color: var(--red); }
+    #panel-converter ::-webkit-scrollbar { width: 6px; height: 6px; }
+    #panel-converter ::-webkit-scrollbar-track { background: var(--bg2); }
+    #panel-converter ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+  
+  </style>
+  <style data-app="do">
+
+        #panel-do {
+            --bg-primary: #0d0f12;
+            --bg-secondary: #13161b;
+            --bg-tertiary: #1a1e26;
+            --accent-color: #f59e0b;
+            --accent-hover: #fbbf24;
+            --accent-dim: #b45309;
+            --accent-glow: rgba(245, 158, 11, 0.08);
+            --accent-glow2: rgba(245, 158, 11, 0.15);
+            --accent-success: #10b981;
+            --accent-danger: #ef4444;
+            --text-primary: #e2e8f0;
+            --text-secondary: #64748b;
+            --text-mid: #94a3b8;
+            --blue: #60a5fa;
+            --border-color: #252a35;
+            --border-bright: #2f3645;
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+            --transition-speed: 0.2s;
+            --mono: 'IBM Plex Mono', monospace;
+            --sans: 'IBM Plex Sans', sans-serif;
+        }
+
+        #panel-do * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        #panel-do {
+            font-family: var(--sans);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        #panel-do::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(245, 158, 11, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(245, 158, 11, 0.025) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #panel-do h1, #panel-do h2, #panel-do h3, #panel-do h4 {
+            font-family: var(--sans);
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        #panel-do .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        #panel-do header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+        }
+
+        #panel-do .header-title h1 {
+            font-size: 2rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        #panel-do .header-title p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-family: var(--mono);
+        }
+
+        #panel-do .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+            #panel-do .dashboard-grid {
+                grid-template-columns: 350px 1fr;
+            }
+        }
+
+        /* Card Styles */
+        #panel-do .card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.75rem;
+            box-shadow: var(--card-shadow);
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed), border-color var(--transition-speed);
+        }
+
+        #panel-do .card:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            border-color: var(--border-bright);
+        }
+
+        #panel-do .card-title {
+            font-size: 1.1rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+
+        #panel-do .card-title i {
+            color: var(--accent-color);
+        }
+
+        /* Form elements */
+        #panel-do .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        #panel-do .input-group label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-family: var(--mono);
+        }
+
+        #panel-do textarea {
+            width: 100%;
+            height: 250px;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            padding: 1rem;
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            resize: vertical;
+            transition: border-color var(--transition-speed);
+        }
+
+        #panel-do textarea:focus {
+            outline: none;
+            border-color: var(--accent-dim);
+        }
+
+        #panel-do .file-drop-zone {
+            border: 2px dashed var(--border-bright);
+            border-radius: 12px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            background-color: var(--bg-tertiary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        #panel-do .file-drop-zone:hover, #panel-do .file-drop-zone.dragover {
+            border-color: var(--accent-dim);
+            background-color: rgba(245, 158, 11, 0.05);
+        }
+
+        #panel-do .file-drop-zone.dragover {
+            border-color: var(--accent-color);
+        }
+
+        #panel-do .file-drop-zone i {
+            font-size: 2rem;
+            color: var(--accent-color);
+        }
+
+        #panel-do .file-drop-zone p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-family: var(--mono);
+        }
+
+        #panel-do .file-drop-zone strong {
+            color: var(--accent-color);
+        }
+
+        #panel-do .file-drop-zone input {
+            display: none;
+        }
+
+        #panel-do .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            font-family: var(--sans);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: none;
+            width: 100%;
+        }
+
+        #panel-do .btn-primary {
+            background-color: var(--accent-color);
+            color: #000;
+        }
+
+        #panel-do .btn-primary:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        #panel-do .btn-secondary {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-mid);
+        }
+
+        #panel-do .btn-secondary:hover {
+            background-color: var(--bg-tertiary);
+            border-color: var(--border-bright);
+            color: var(--text-primary);
+        }
+
+        #panel-do .btn-success {
+            background-color: var(--bg-tertiary);
+            color: var(--accent-success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        #panel-do .btn-success:hover {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-color: var(--accent-success);
+            transform: translateY(-1px);
+        }
+
+        #panel-do .btn-danger {
+            background-color: var(--accent-danger);
+            color: white;
+        }
+
+        #panel-do .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        /* Stats Section */
+        #panel-do .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        #panel-do .stat-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: border-color var(--transition-speed);
+        }
+
+        #panel-do .stat-card:hover {
+            border-color: var(--border-bright);
+        }
+
+        #panel-do .stat-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            background-color: var(--accent-glow2);
+            border: 1px solid var(--accent-dim);
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        #panel-do .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #panel-do .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1.2;
+            color: var(--accent-color);
+            font-family: var(--mono);
+        }
+
+        #panel-do .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-family: var(--mono);
+        }
+
+        /* Table Area Styles */
+        #panel-do .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        #panel-do .table-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        /* Constrain grid/flex items so the TABLE scrolls horizontally,
+           not the whole page. min-width:0 lets these shrink below content width. */
+        #panel-do .dashboard-grid > * { min-width: 0; }
+        #panel-do .card { min-width: 0; }
+
+        #panel-do .table-container {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-secondary);
+        }
+
+        #panel-do table {
+            width: max-content;
+            min-width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        #panel-do th {
+            background-color: var(--bg-tertiary);
+            color: var(--accent-color);
+            font-weight: 500;
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border-bright);
+            font-family: var(--mono);
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+        }
+
+        #panel-do td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        #panel-do tr:last-child td {
+            border-bottom: none;
+        }
+
+        #panel-do tr:hover td {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        #panel-do .editable-cell {
+            background-color: transparent;
+            border: 1px solid transparent;
+            color: var(--text-primary);
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: inherit;
+            width: 100%;
+            transition: all var(--transition-speed);
+        }
+
+        #panel-do .editable-cell:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        #panel-do .editable-cell:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background-color: var(--bg-tertiary);
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+        }
+
+        #panel-do .nopol-cell {
+            font-weight: 500;
+            color: var(--blue);
+            text-transform: uppercase;
+            font-family: var(--mono);
+        }
+
+        #panel-do .badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: var(--mono);
+        }
+
+        #panel-do .badge-info {
+            background-color: var(--accent-glow);
+            color: var(--accent-color);
+            border: 1px solid var(--accent-dim);
+        }
+
+        #panel-do .badge-success {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        #panel-do .action-cell {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        #panel-do .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.4rem;
+            border-radius: 6px;
+            transition: all var(--transition-speed);
+            font-size: 1rem;
+        }
+
+        #panel-do .btn-icon-danger {
+            color: var(--accent-danger);
+        }
+
+        #panel-do .btn-icon-danger:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        #panel-do .btn-icon-primary {
+            color: var(--accent-color);
+        }
+
+        #panel-do .btn-icon-primary:hover {
+            background-color: rgba(245, 158, 11, 0.1);
+        }
+
+        /* Empty state styling */
+        #panel-do .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+            gap: 1rem;
+        }
+
+        #panel-do .empty-state i {
+            font-size: 3.5rem;
+            color: var(--border-bright);
+        }
+
+        #panel-do .empty-state p {
+            font-size: 1rem;
+            font-family: var(--mono);
+        }
+
+        #panel-do .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--accent-success);
+            color: var(--accent-success);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            font-family: var(--mono);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 1000;
+            transform: translateY(150%);
+            transition: transform var(--transition-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #panel-do .toast.show {
+            transform: translateY(0);
+        }
+
+        #panel-do .toast i {
+            color: var(--accent-success);
+            font-size: 1.25rem;
+        }
+
+        /* Custom scrollbar — matches converter terminal aesthetic */
+        #panel-do ::-webkit-scrollbar { width: 8px; height: 8px; }
+        #panel-do ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        #panel-do ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 4px; }
+        #panel-do ::-webkit-scrollbar-thumb:hover { background: var(--accent-dim); }
+    
+  </style>
+  <style data-app="extractor">
+
+        #panel-extractor {
+            --bg: #0d0f12;
+            --bg2: #13161b;
+            --bg3: #1a1e26;
+            --border: #252a35;
+            --border-bright: #2f3645;
+            --amber: #f59e0b;
+            --amber-dim: #b45309;
+            --amber-glow: rgba(245, 158, 11, 0.08);
+            --amber-glow2: rgba(245, 158, 11, 0.15);
+            --text: #e2e8f0;
+            --text-dim: #64748b;
+            --text-mid: #94a3b8;
+            --green: #10b981;
+            --red: #ef4444;
+            --blue: #60a5fa;
+            --mono: 'IBM Plex Mono', monospace;
+            --sans: 'IBM Plex Sans', sans-serif;
+        }
+
+        #panel-extractor * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        #panel-extractor {
+            font-family: var(--sans);
+            background: var(--bg);
+            min-height: 100vh;
+            padding: 32px 24px;
+            color: var(--text);
+        }
+
+        #panel-extractor::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: linear-gradient(rgba(245, 158, 11, 0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(245, 158, 11, 0.025) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #panel-extractor .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--bg2);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        #panel-extractor .header {
+            background: var(--bg3);
+            color: var(--text);
+            padding: 24px 30px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        #panel-extractor .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        #panel-extractor .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--amber-glow2);
+            border: 1px solid var(--amber-dim);
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        #panel-extractor .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            color: var(--text);
+        }
+
+        #panel-extractor .header p {
+            font-size: 12px;
+            color: var(--text-dim);
+            font-family: var(--mono);
+            margin-top: 3px;
+        }
+
+        #panel-extractor .badge {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--amber);
+            background: var(--amber-glow);
+            border: 1px solid var(--amber-dim);
+            padding: 4px 10px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        #panel-extractor .content {
+            padding: 30px;
+            position: relative;
+        }
+
+        #panel-extractor .selector-label {
+            font-weight: 600;
+            color: var(--amber);
+            font-family: var(--mono);
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        #panel-extractor .mode-selector {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding: 14px 18px;
+            background: var(--bg2);
+            border-radius: 8px;
+            align-items: center;
+            border: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        #panel-extractor .mode-selector label,
+        #panel-extractor .data-type-selector label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-mid);
+        }
+
+        #panel-extractor input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--amber);
+        }
+
+        #panel-extractor .data-type-selector {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 15px;
+            padding: 12px 18px;
+            background: var(--bg2);
+            border-radius: 8px;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--amber-dim);
+            flex-wrap: wrap;
+        }
+
+        #panel-extractor .data-type-selector label {
+            font-size: 14px;
+        }
+
+        #panel-extractor .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        #panel-extractor .tab {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-dim);
+            font-family: var(--sans);
+            transition: all 0.2s;
+        }
+
+        #panel-extractor .tab.active {
+            color: var(--amber);
+            border-bottom-color: var(--amber);
+        }
+
+        #panel-extractor .tab:hover {
+            color: var(--text);
+        }
+
+        #panel-extractor .tab-content {
+            display: none;
+        }
+
+        #panel-extractor .tab-content.active {
+            display: block;
+        }
+
+        #panel-extractor .section {
+            margin-bottom: 28px;
+        }
+
+        #panel-extractor .section-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-dim);
+            font-family: var(--mono);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #panel-extractor .section-title::before {
+            content: '';
+            width: 3px;
+            height: 16px;
+            background: var(--amber);
+            border-radius: 2px;
+        }
+
+        #panel-extractor textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 1px solid var(--border-bright);
+            border-radius: 8px;
+            font-family: var(--mono);
+            font-size: 13px;
+            resize: vertical;
+            transition: border-color 0.2s;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        #panel-extractor textarea:focus {
+            outline: none;
+            border-color: var(--amber-dim);
+        }
+
+        #panel-extractor textarea::placeholder {
+            color: var(--text-dim);
+        }
+
+        #panel-extractor .file-upload {
+            border: 2px dashed var(--border-bright);
+            border-radius: 12px;
+            padding: 52px 32px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            background: var(--bg2);
+        }
+
+        #panel-extractor .file-upload:hover,
+        #panel-extractor .file-upload.dragover {
+            border-color: var(--amber-dim);
+            background: var(--bg3);
+        }
+
+        #panel-extractor .file-upload.dragover {
+            border-color: var(--amber);
+        }
+
+        #panel-extractor .file-upload-icon {
+            font-size: 40px;
+            margin-bottom: 14px;
+        }
+
+        #panel-extractor .file-upload-text {
+            color: var(--text);
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        #panel-extractor .file-upload-hint {
+            font-size: 13px;
+            color: var(--text-dim);
+            font-family: var(--mono);
+        }
+
+        #panel-extractor #fileInput {
+            display: none;
+        }
+
+        #panel-extractor .file-name {
+            margin-top: 12px;
+            padding: 10px 14px;
+            background: var(--bg3);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 6px;
+            color: var(--green);
+            font-weight: 500;
+            font-size: 14px;
+            font-family: var(--mono);
+        }
+
+        #panel-extractor .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        #panel-extractor button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: var(--sans);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #panel-extractor .btn-convert {
+            background: var(--amber);
+            color: #000;
+            flex: 1;
+        }
+
+        #panel-extractor .btn-convert:hover {
+            background: #fbbf24;
+            transform: translateY(-1px);
+        }
+
+        #panel-extractor .btn-copy {
+            background: var(--bg3);
+            color: var(--green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            flex: 1;
+        }
+
+        #panel-extractor .btn-copy:hover {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--green);
+            transform: translateY(-1px);
+        }
+
+        #panel-extractor .btn-clear {
+            background: var(--bg3);
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+
+        #panel-extractor .btn-clear:hover {
+            border-color: var(--border-bright);
+            color: var(--text);
+        }
+
+        #panel-extractor .output-box {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            min-height: 300px;
+            max-height: 600px;
+            font-family: var(--mono);
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre;
+            overflow: auto;
+            color: var(--text);
+        }
+
+        #panel-extractor .error {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: var(--red);
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        #panel-extractor .success {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: var(--green);
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        #panel-extractor .icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        #panel-extractor .info-box {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-top: 8px;
+            padding: 10px 14px;
+            background: var(--bg2);
+            border-radius: 6px;
+            border-left: 3px solid var(--amber-dim);
+            font-family: var(--mono);
+            line-height: 1.7;
+        }
+
+        #panel-extractor .info-box strong {
+            color: var(--amber);
+        }
+
+        #panel-extractor ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        #panel-extractor ::-webkit-scrollbar-track {
+            background: var(--bg2);
+        }
+
+        #panel-extractor ::-webkit-scrollbar-thumb {
+            background: var(--border-bright);
+            border-radius: 3px;
+        }
+    
+  </style>
+  <style data-app="rincianharian">
+
+  #panel-rincianharian{
+    --bg:#0d0f12; --bg2:#13161b; --bg3:#1a1e26;
+    --border:#252a35; --border-bright:#2f3645;
+    --amber:#f59e0b; --amber-dim:#b45309; --amber-glow:rgba(245,158,11,0.08); --amber-glow2:rgba(245,158,11,0.15);
+    --text:#e2e8f0; --text-dim:#64748b; --text-mid:#94a3b8;
+    --green:#10b981; --red:#ef4444; --blue:#60a5fa;
+    --mono:'IBM Plex Mono',monospace; --sans:'IBM Plex Sans',sans-serif;
+  }
+  #panel-rincianharian *{box-sizing:border-box;margin:0;padding:0}
+  #panel-rincianharian{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;padding:32px 24px}
+  #panel-rincianharian::before{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(245,158,11,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(245,158,11,0.025) 1px,transparent 1px);
+    background-size:48px 48px;pointer-events:none;z-index:0}
+  #panel-rincianharian .wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto}
+  #panel-rincianharian header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:32px;border-bottom:1px solid var(--border);padding-bottom:20px}
+  #panel-rincianharian .logo-group{display:flex;align-items:center;gap:14px}
+  #panel-rincianharian .logo-icon{width:44px;height:44px;background:var(--amber-glow2);border:1px solid var(--amber-dim);border-radius:8px;display:grid;place-items:center;font-size:22px;flex-shrink:0}
+  #panel-rincianharian .logo-text h1{font-size:20px;font-weight:600;color:var(--text);letter-spacing:-0.3px}
+  #panel-rincianharian .logo-text p{font-size:12px;color:var(--text-dim);font-family:var(--mono);margin-top:3px}
+  #panel-rincianharian .badge{font-family:var(--mono);font-size:11px;color:var(--amber);background:var(--amber-glow);border:1px solid var(--amber-dim);padding:4px 10px;border-radius:4px;letter-spacing:0.5px;white-space:nowrap}
+  #panel-rincianharian .card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:18px}
+  #panel-rincianharian h2{font-size:13px;font-family:var(--mono);color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px}
+  #panel-rincianharian h2 span{text-transform:none;letter-spacing:0;font-family:var(--sans)}
+  #panel-rincianharian textarea{width:100%;min-height:180px;border:1px solid var(--border-bright);border-radius:10px;
+    padding:14px;font-family:var(--mono);font-size:12.5px;line-height:1.6;resize:vertical;color:var(--text);background:var(--bg)}
+  #panel-rincianharian textarea:focus{outline:none;border-color:var(--amber-dim);box-shadow:0 0 0 3px var(--amber-glow)}
+  #panel-rincianharian textarea::placeholder{color:var(--text-dim)}
+  #panel-rincianharian .row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:16px}
+  #panel-rincianharian button{font-family:var(--sans);font-weight:500;cursor:pointer;border:none;border-radius:8px;
+    transition:all .15s ease;display:inline-flex;align-items:center;gap:8px;padding:11px 20px;font-size:14px}
+  #panel-rincianharian .btn{background:var(--amber);color:#000}
+  #panel-rincianharian .btn:hover{background:#fbbf24;transform:translateY(-1px)}
+  #panel-rincianharian .btn-g{background:var(--bg3);color:var(--green);border:1px solid rgba(16,185,129,0.3)}
+  #panel-rincianharian .btn-g:hover{background:rgba(16,185,129,0.1);border-color:var(--green);transform:translateY(-1px)}
+  #panel-rincianharian .btn-ghost{background:var(--bg3);color:var(--text-mid);border:1px solid var(--border)}
+  #panel-rincianharian .btn-ghost:hover{border-color:var(--border-bright);color:var(--text)}
+  #panel-rincianharian .btn-x{background:var(--bg3);color:var(--red);border:1px solid rgba(239,68,68,0.3)}
+  #panel-rincianharian .btn-x:hover{background:rgba(239,68,68,0.1);border-color:var(--red)}
+  #panel-rincianharian .file-label{font-family:var(--sans);font-weight:500;background:var(--bg3);color:var(--blue);
+    border:1px solid rgba(96,165,250,0.3);padding:11px 20px;border-radius:8px;font-size:14px;cursor:pointer;transition:all .15s}
+  #panel-rincianharian .file-label:hover{background:rgba(96,165,250,0.1);border-color:var(--blue)}
+  #panel-rincianharian input[type=file]{display:none}
+  #panel-rincianharian .hint{font-size:11.5px;color:var(--text-dim);margin-top:16px;line-height:1.9;font-family:var(--mono);
+    background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--amber-dim);border-radius:8px;padding:12px 16px}
+  #panel-rincianharian code{background:var(--amber-glow);color:var(--amber);padding:1px 6px;border-radius:4px;font-size:11px;font-family:var(--mono)}
+  #panel-rincianharian .stats{display:flex;gap:28px;flex-wrap:wrap;margin-bottom:16px;padding:14px 22px;background:var(--bg);border:1px solid var(--border);border-radius:8px}
+  #panel-rincianharian .stat{display:flex;flex-direction:column;gap:4px}
+  #panel-rincianharian .stat .k{font-size:10.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.6px;font-family:var(--mono)}
+  #panel-rincianharian .stat .v{font-size:18px;font-weight:600;color:var(--amber);font-family:var(--mono)}
+  #panel-rincianharian .tablewrap{overflow:auto;border:1px solid var(--border);border-radius:10px;max-height:620px}
+  #panel-rincianharian table{border-collapse:collapse;width:100%;font-size:13px}
+  #panel-rincianharian thead th{position:sticky;top:0;background:var(--bg3);color:var(--amber);text-align:left;
+    padding:12px 12px;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;
+    white-space:nowrap;z-index:2;border-bottom:1px solid var(--border-bright)}
+  #panel-rincianharian tbody td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text)}
+  #panel-rincianharian tbody tr:hover{background:rgba(255,255,255,0.02)}
+  #panel-rincianharian td[contenteditable]{outline:none}
+  #panel-rincianharian td[contenteditable]:focus{background:var(--amber-glow);box-shadow:inset 0 0 0 1px var(--amber-dim)}
+  #panel-rincianharian .num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-family:var(--mono);color:var(--amber);font-weight:600}
+  #panel-rincianharian .cat{white-space:nowrap;text-align:center;font-family:var(--mono);font-size:11px;font-weight:600}
+  #panel-rincianharian .cat.is-medis{color:#7dd3fc;background:rgba(56,189,248,0.12)}
+  #panel-rincianharian .cat.is-industri{color:#fbbf24;background:rgba(245,158,11,0.12)}
+  #panel-rincianharian .cat.is-padang{color:#c4b5fd;background:rgba(167,139,250,0.14)}
+  #panel-rincianharian .cat.is-ikn{color:#5eead4;background:rgba(45,212,191,0.12)}
+  #panel-rincianharian .cat.is-misc{color:#94a3b8;background:rgba(148,163,184,0.12)}
+  #panel-rincianharian .idx{color:var(--text-dim);text-align:right;width:42px;font-family:var(--mono);font-size:12px}
+  #panel-rincianharian .del{color:var(--red);cursor:pointer;font-weight:700;text-align:center;width:36px;user-select:none}
+  #panel-rincianharian .del:hover{color:#fca5a5}
+  #panel-rincianharian .empty{padding:44px;text-align:center;color:var(--text-dim);font-family:var(--mono)}
+  #panel-rincianharian .toast{position:fixed;bottom:28px;right:28px;background:var(--bg3);border:1px solid var(--green);
+    color:var(--green);padding:12px 20px;border-radius:8px;font-size:14px;font-family:var(--mono);
+    opacity:0;transform:translateY(12px);transition:all .25s ease;pointer-events:none;z-index:99}
+  #panel-rincianharian .toast.show{opacity:1;transform:translateY(0)}
+  #panel-rincianharian ::-webkit-scrollbar{width:6px;height:6px}
+  #panel-rincianharian ::-webkit-scrollbar-track{background:var(--bg2)}
+  #panel-rincianharian ::-webkit-scrollbar-thumb{background:var(--border-bright);border-radius:3px}
+
+  </style>
 </head>
 <body>
-  <nav class="nav">
-    <div class="brand">
-      <span class="dot"></span>
-      Jansen's Tool Suite
+  <nav class="suite-nav">
+    <div class="suite-brand"><span class="dot"></span>Jansen's Tool Suite</div>
+    <div class="suite-links" id="suiteLinks">
+      <a data-app="converter" class="active">Fleet Card Converter</a>
+      <a data-app="do">DO Extractor</a>
+      <a data-app="extractor">Data → Table</a>
+      <a data-app="rincianharian">Rincian Harian</a>
     </div>
-    <div class="links" id="links">
-      <a href="#converter" data-app="converter">Fleet Card Converter</a>
-      <a href="#do" data-app="do">DO Extractor</a>
-      <a href="#extractor" data-app="extractor">Data → Table</a>
-      <a href="#rincianharian" data-app="rincianharian">Rincian Harian</a>
-    </div>
-    <button class="burger" id="burger" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
+    <button class="suite-burger" id="suiteBurger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   </nav>
 
-  <div class="frame-wrap" id="frameWrap"></div>
+  <main class="suite-main">
+    <section class="panel active" data-app="converter">
+      <div id="panel-converter">
 
-<script>
-  const APPS = {
-    converter:     { file:'converter.html' },
-    do:            { file:'do.html' },
-    extractor:     { file:'extractor.html' },
-    rincianharian: { file:'rincianharian.html' }
-  };
-  const ORDER = ['converter','do','extractor','rincianharian'];
+<div class="wrapper">
+  <header>
+    <div class="logo-group">
+      <div class="logo-icon">⛽</div>
+      <div class="logo-text">
+        <h1>Fleet Card Converter</h1>
+        <p>TXT Report → Excel Spreadsheet</p>
+      </div>
+    </div>
+    <div class="badge">DARK MODE</div>
+  </header>
 
-  const frameWrap = document.getElementById('frameWrap');
-  const links = document.getElementById('links');
-  const burger = document.getElementById('burger');
-  const loaded = {};
+  <div class="upload-zone" id="uploadZone">
+    <span class="upload-icon" id="uploadIcon">📂</span>
+    <p class="upload-title" id="uploadTitle">Drop your .txt files here, or click to browse</p>
+    <p class="upload-sub" id="uploadSub">Multiple files OK — Laporan Transaksi Harian Payment Kartu Fleet (.txt)</p>
+    <div class="file-info" id="fileInfo" style="display:none;">
+      <span style="color:var(--green)">✓</span>
+      <span class="file-name" id="fileName"></span>
+      <span class="file-size" id="fileSize"></span>
+    </div>
+    <div class="file-list" id="fileList"></div>
+    <input type="file" id="fileInput" accept=".txt" multiple="">
+  </div>
 
-  function ensureFrame(name){
-    if(loaded[name]) return loaded[name];
-    const f = document.createElement('iframe');
-    f.src = APPS[name].file;
-    f.id = 'frame-' + name;
-    f.title = name;
-    frameWrap.appendChild(f);
-    loaded[name] = f;
-    return f;
+  <div class="controls">
+    <button class="btn-primary" id="btnConvert" disabled="">⚡ Convert to Excel</button>
+    <button class="btn-download" id="btnDownload" disabled="">⬇ Download .xlsx</button>
+    <button class="btn-copy" id="btnCopy" disabled="">⧉ Copy Table</button>
+    <button class="btn-reset" id="btnReset">↺ Reset</button>
+  </div>
+
+  <div class="stats-bar" id="statsBar">
+    <div class="stat"><span class="stat-label">FILES</span><span class="stat-val" id="statFiles">0</span></div>
+    <span class="stat-sep">|</span>
+    <div class="stat"><span class="stat-label">ROWS</span><span class="stat-val" id="statRows">0</span></div>
+    <span class="stat-sep">|</span>
+    <div class="stat"><span class="stat-label">DUPES&nbsp;REMOVED</span><span class="stat-val" id="statDupes">0</span></div>
+    <span class="stat-sep">|</span>
+    <div class="stat"><span class="stat-label">CARDS</span><span class="stat-val" id="statCards">0</span></div>
+    <span class="stat-sep">|</span>
+    <div class="stat"><span class="stat-label">PERSONS</span><span class="stat-val" id="statPersons">0</span></div>
+    <span class="stat-sep">|</span>
+    <div class="stat"><span class="stat-label">GRAND TOTAL</span><span class="stat-val" id="statTotal">Rp 0</span></div>
+  </div>
+
+  <div class="instructions">
+    <p>
+      <strong>MULTI-FILE:</strong> Upload banyak .txt sekaligus — semua digabung jadi satu
+      &nbsp;|&nbsp; <strong>URUT:</strong> Diurutkan berdasarkan tanggal (terlama → terbaru)
+      &nbsp;|&nbsp; <strong>DUPLIKAT:</strong> Baris identik otomatis dihapus
+      &nbsp;|&nbsp; <strong>COPY TABLE:</strong> Salin baris (tanpa header) untuk di-paste ke file Excel yang sudah ada
+    </p>
+  </div>
+
+  <div class="preview-section" id="previewSection">
+    <div class="section-header">
+      <span class="section-title">◈ Preview Output</span>
+      <span class="row-count" id="rowCount">0 rows</span>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>No. Kartu Fleet</th>
+            <th>Nama Pemilik Kartu</th>
+            <th>Waktu</th>
+            <th>Nominal Transaksi</th>
+            <th>Lokasi / Terminal</th>
+            <th>Jenis</th>
+          </tr>
+        </thead>
+        <tbody id="previewBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+
+
+      </div>
+    </section>
+    <section class="panel" data-app="do">
+      <div id="panel-do">
+
+
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <h1>DO Data Extractor</h1>
+                <p>Ekstrak dan kelola data Nopol, Jenis Mobil, dan Lokasi Klien dari log pengiriman</p>
+            </div>
+            <div>
+                <span class="badge badge-info"><i class="fa-solid fa-code"></i> Single HTML Utility</span>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Left Side: Input Controls -->
+            <div class="card" style="height: fit-content;">
+                <div class="card-title">
+                    <i class="fa-solid fa-file-import"></i>
+                    <h2>Input Sumber Data</h2>
+                </div>
+
+                <div class="file-drop-zone" id="dropZone">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <p>Tarik &amp; Lepas file <strong>datado.txt</strong> di sini atau klik untuk memilih file</p>
+                    <input type="file" id="fileInput" accept=".txt">
+                </div>
+
+                <div class="input-group">
+                    <label for="rawInput">Atau Paste Data Teks</label>
+                    <textarea id="rawInput" placeholder="Tempelkan data teks di sini...
+Contoh:
+Mobil B 9283 FXA Avanza tujuan Depok
+Truk F 1029 CC L300 PT Indofood Cikarang
+B 8871 YZ - Traga - Gudang Sunter"></textarea>
+                </div>
+
+                <button class="btn btn-primary" id="btnExtract">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Ekstrak Data
+                </button>
+            </div>
+
+            <!-- Right Side: Table View -->
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <!-- Stats Row -->
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statTotal">0</span>
+                            <span class="stat-label">Total Baris</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-truck"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statTypes">0</span>
+                            <span class="stat-label">Jenis Mobil</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statLocations">0</span>
+                            <span class="stat-label">Lokasi Klien</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Data Area -->
+                <div class="card">
+                    <div class="table-controls">
+                        <h3>Tabel Data Hasil Ekstraksi</h3>
+                        <div class="table-actions">
+                            <button class="btn btn-secondary" id="btnAddRow" style="width: auto;">
+                                <i class="fa-solid fa-plus"></i> Tambah Baris
+                            </button>
+                            <button class="btn btn-secondary" id="btnClipboard" style="width: auto;">
+                                <i class="fa-solid fa-copy"></i> Salin (Excel)
+                            </button>
+                            <button class="btn btn-success" id="btnExport" style="width: auto;">
+                                <i class="fa-solid fa-file-excel"></i> Ekspor CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="dataTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10%">Tanggal</th>
+                                    <th style="width: 12%">Nopol</th>
+                                    <th style="width: 12%">Jenis Mobil</th>
+                                    <th style="width: 21%">Lokasi Klien</th>
+                                    <th style="width: 7%">Solar</th>
+                                    <th style="width: 7%">Tol</th>
+                                    <th style="width: 7%">Insentif</th>
+                                    <th style="width: 7%">Mel</th>
+                                    <th style="width: 7%">DL</th>
+                                    <th style="width: 7%">KM</th>
+                                    <th style="width: 5%; text-align: center;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <!-- Dynamic Rows will go here -->
+                            </tbody>
+                        </table>
+                        <div class="empty-state" id="emptyState">
+                            <i class="fa-solid fa-table"></i>
+                            <p>Belum ada data. Silakan impor file atau tempelkan teks lalu klik Ekstrak Data.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toastMessage">Data berhasil disalin!</span>
+    </div>
+
+    
+
+
+
+      </div>
+    </section>
+    <section class="panel" data-app="extractor">
+      <div id="panel-extractor">
+
+    <div class="container">
+        <div class="header">
+            <div class="logo-group">
+                <div class="logo-icon">📊</div>
+                <div class="logo-text">
+                    <h1>Data to Table Converter</h1>
+                    <p>JSON · Excel · Google Sheets → Rincian Table</p>
+                </div>
+            </div>
+            <div class="badge">DARK MODE</div>
+        </div>
+
+        <div class="content">
+            <div class="mode-selector">
+                <span class="selector-label">Processing Mode:</span>
+                <label>
+                    <input type="radio" name="mode" value="medical" checked="" onchange="EX.switchMode()">
+                    Medical
+                </label>
+                <label>
+                    <input type="radio" name="mode" value="industrial" onchange="EX.switchMode()">
+                    Industrial
+                </label>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="EX.switchTab('json')">📝 JSON</button>
+                <button class="tab" onclick="EX.switchTab('excel')">📄 Excel File</button>
+                <button class="tab" onclick="EX.switchTab('spreadsheet')">📋 Copy from Spreadsheet</button>
+                <button class="tab" onclick="EX.switchTab('to-json')">🔄 Convert to JSON</button>
+            </div>
+
+            <!-- JSON Tab -->
+            <div id="json-tab" class="tab-content active">
+                <div class="section">
+                    <div class="section-title">Input JSON Data</div>
+                    <textarea id="inputJson" placeholder="Paste your JSON data here...
+Example:
+[
+  {
+    &quot;MOBIL&quot;: &quot;Colt Diesel&quot;,
+    &quot;TUJUAN&quot;: &quot;- RSPI PURI INDAH&quot;,
+    ...
   }
+]"></textarea>
+                    <div class="button-group">
+                        <button class="btn-convert" onclick="EX.convertFromJson()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            Convert
+                        </button>
+                        <button class="btn-clear" onclick="EX.clearAll()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            Clear
+                        </button>
+                    </div>
+                    <div id="errorMsgJson"></div>
+                </div>
+            </div>
 
-  function show(name){
-    if(!APPS[name]) name = ORDER[0];
-    // frames
-    ensureFrame(name);
-    Object.keys(loaded).forEach(k=>{
-      loaded[k].classList.toggle('active', k===name);
+            <!-- Excel Tab -->
+            <div id="excel-tab" class="tab-content">
+                <div class="section">
+                    <div class="section-title">Upload Excel File</div>
+                    <div class="file-upload" id="fileUpload" onclick="EX.openFilePicker()">
+                        <div class="file-upload-icon">📁</div>
+                        <div class="file-upload-text">Click to upload or drag &amp; drop</div>
+                        <div class="file-upload-hint">Supports .xlsx and .xls files</div>
+                    </div>
+                    <input type="file" id="fileInput" accept=".xlsx,.xls" onchange="EX.handleFileUpload(event)">
+                    <div id="fileName"></div>
+                    <div class="button-group">
+                        <button class="btn-convert" onclick="EX.convertFromExcel()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            Convert
+                        </button>
+                        <button class="btn-clear" onclick="EX.clearAll()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            Clear
+                        </button>
+                    </div>
+                    <div id="errorMsgExcel"></div>
+                </div>
+            </div>
+
+            <!-- Spreadsheet Tab -->
+            <div id="spreadsheet-tab" class="tab-content">
+                <!-- Data Type Selector (only shown in Medical mode) -->
+                <div class="data-type-selector" id="dataTypeSelector">
+                    <span class="selector-label">Data Type:</span>
+                    <label>
+                        <input type="radio" name="dataType" value="solar-tol" checked="" onchange="EX.switchDataType()">
+                        Solar dan Tol
+                    </label>
+                    <label>
+                        <input type="radio" name="dataType" value="insentif-mel" onchange="EX.switchDataType()">
+                        Total Insentif dan Mel
+                    </label>
+                </div>
+
+                <!-- Specific Nopol Input (only shown in insentif-mel mode) -->
+                <div class="section" id="specificNopolSection" style="display: none;">
+                    <div class="section-title">Nopol Khusus (Solar + Insentif + Mel)</div>
+                    <textarea id="specificNopolInput" placeholder="Masukkan nopol yang akan dihitung: Solar + Insentif + Mel
+Format bisa menggunakan koma, baris baru, atau tanda hubung.
+
+Contoh:
+9080, 9612 syq, 9649, 9613
+
+Atau:
+- 9080 syq
+- 9612
+- 9649
+
+Atau:
+9080
+9612 syq
+9649
+
+Kosongkan jika semua nopol menggunakan perhitungan standar (Insentif + Mel saja)" style="min-height: 120px;"></textarea>
+                    <div class="info-box">
+                        💡 <strong>Info:</strong> Nopol yang dimasukkan di sini akan dihitung dengan rumus <strong>Solar
+                            + Insentif + Mel</strong>. Nopol lainnya akan tetap menggunakan <strong>Insentif +
+                            Mel</strong> saja.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Paste from Google Sheets / Excel</div>
+                    <textarea id="inputSpreadsheet" placeholder="Copy cells from Google Sheets or Excel and paste here...
+
+Example:
+Colt Diesel    - RSPI PURI INDAH    174    Rp622,000        Rincian    
+B 9589 PXW / B 9080 SYQ KW    - RSUD KEMBANGAN            Solar    Rp197,000
+MAMAD - GUNAWAN    - RS PREMIER BINTARO            Tol    Rp230,000"></textarea>
+                    <div class="button-group">
+                        <button class="btn-convert" onclick="EX.convertFromSpreadsheet()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            Convert
+                        </button>
+                        <button class="btn-clear" onclick="EX.clearAll()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            Clear
+                        </button>
+                    </div>
+                    <div id="errorMsgSpreadsheet"></div>
+                </div>
+            </div>
+
+            <!-- Convert to JSON Tab -->
+            <div id="to-json-tab" class="tab-content">
+                <div class="section">
+                    <div class="section-title">Paste Spreadsheet Data</div>
+                    <textarea id="inputSpreadsheetToJson" placeholder="Copy cells from Google Sheets or Excel and paste here...
+
+Example:
+Colt Diesel    - RSPI PURI INDAH    174    Rp622,000        Rincian    
+B 9589 PXW / B 9080 SYQ KW    - RSUD KEMBANGAN            Solar    Rp197,000
+MAMAD - GUNAWAN    - RS PREMIER BINTARO            Tol    Rp230,000"></textarea>
+                    <div class="button-group">
+                        <button class="btn-convert" onclick="EX.convertSpreadsheetToJson()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            Convert to JSON
+                        </button>
+                        <button class="btn-clear" onclick="EX.clearToJson()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            Clear
+                        </button>
+                    </div>
+                    <div id="errorMsgToJson"></div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">JSON Output</div>
+                    <div class="output-box" id="outputBoxJson"></div>
+                    <div class="button-group">
+                        <button class="btn-copy" onclick="EX.copyJsonOutput()">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            Copy JSON to Clipboard
+                        </button>
+                    </div>
+                    <div id="successMsgJson"></div>
+                </div>
+            </div>
+
+            <!-- Output Section -->
+            <div class="section">
+                <div class="section-title">Output Table</div>
+                <div class="output-box" id="outputBox"></div>
+                <div class="button-group">
+                    <button class="btn-copy" onclick="EX.copyOutput()">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        Copy to Clipboard
+                    </button>
+                </div>
+                <div id="successMsg"></div>
+            </div>
+        </div>
+    </div>
+
+    
+
+
+
+
+      </div>
+    </section>
+    <section class="panel" data-app="rincianharian">
+      <div id="panel-rincianharian">
+
+<div class="wrap">
+  <header>
+    <div class="logo-group">
+      <div class="logo-icon">🚚</div>
+      <div class="logo-text">
+        <h1>Konversi Rincian Harian</h1>
+        <p>Pengangkutan &amp; Insentif TXT → Tabel Terstruktur</p>
+      </div>
+    </div>
+    <div class="badge">DARK MODE</div>
+  </header>
+
+  <div class="card">
+    <h2>1. Masukkan Data</h2>
+    <textarea id="input" placeholder="Tempel data di sini, atau gunakan tombol 'Pilih File .txt' di bawah. Bisa banyak blok / banyak tanggal sekaligus."></textarea>
+    <div class="row">
+      <label class="file-label" for="files">📂 Pilih File .txt (bisa banyak)</label>
+      <input type="file" id="files" accept=".txt,text/plain" multiple="">
+      <button class="btn" id="convert">⚙️ Konversi</button>
+      <button class="btn-ghost" id="clear">Bersihkan</button>
+    </div>
+    <div class="hint">Format yang didukung otomatis: tabel insentif (<code>Nopol | Nama | Nominal</code>), daftar pengangkutan (<code>Nopol – Nama – Tujuan Nominal</code>), pengajuan UJ driver, dan daftar ringkas (<code>PADANG</code>). Tanggal terdeteksi dari header tiap blok.</div>
+  </div>
+
+  <div class="card" id="resultCard" style="display:none">
+    <h2>2. Hasil <span style="font-weight:400;color:var(--text-dim);font-size:12px">— klik sel mana pun untuk mengedit</span></h2>
+    <div class="stats">
+      <div class="stat"><div class="k">Jumlah Baris</div><div class="v" id="cnt">0</div></div>
+      <div class="stat"><div class="k">Total Nominal</div><div class="v" id="sum">Rp 0</div></div>
+    </div>
+    <div class="row" style="margin:0 0 12px">
+      <button class="btn-g" id="xlsx">⬇️ Download Excel</button>
+      <button class="btn-g" id="csv">⬇️ Download CSV</button>
+      <button class="btn-ghost" id="copy">📋 Salin (untuk tempel ke Excel)</button>
+      <button class="btn-ghost" id="addRow">＋ Tambah Baris</button>
+    </div>
+    <div class="tablewrap">
+      <table id="tbl">
+        <thead><tr>
+          <th class="idx">#</th>
+          <th>Tanggal</th>
+          <th>No. Polisi</th>
+          <th>Nama Supir-Kenek</th>
+          <th class="num">Nominal</th>
+          <th>Keterangan</th>
+          <th>Kategori</th>
+          <th></th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+
+
+
+
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      var links = document.getElementById('suiteLinks');
+      var burger = document.getElementById('suiteBurger');
+      var panels = document.querySelectorAll('.suite-main > .panel');
+      function show(name){
+        document.querySelectorAll('.suite-links a').forEach(function(a){ a.classList.toggle('active', a.dataset.app===name); });
+        panels.forEach(function(p){ p.classList.toggle('active', p.dataset.app===name); });
+        links.classList.remove('open'); burger.classList.remove('open');
+      }
+      links.addEventListener('click', function(e){
+        var a = e.target.closest('a[data-app]'); if(!a) return; e.preventDefault(); show(a.dataset.app);
+      });
+      burger.addEventListener('click', function(){ links.classList.toggle('open'); burger.classList.toggle('open'); });
+    })();
+  </script>
+
+  <!-- ===== Per-app logic, each scoped to its own panel ===== -->
+  <script data-app="converter">
+(function(){
+var R = document.getElementById("panel-converter");
+function byId(id){ return R.querySelector('[id="'+id+'"]'); }
+
+  let parsedData = [];     // final combined / deduped / date-sorted rows
+  let filesData  = [];     // [{name, size, text}]
+
+  // ── File Handling (multiple) ──
+  const uploadZone = byId('uploadZone');
+  const fileInput  = byId('fileInput');
+
+  uploadZone.addEventListener('click', () => fileInput.click());
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault(); uploadZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) loadFiles(e.dataTransfer.files);
+  });
+  fileInput.addEventListener('change', e => { if (e.target.files.length) loadFiles(e.target.files); });
+
+  function readFile(file) {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload  = e => resolve({ name: file.name, size: file.size, text: e.target.result });
+      r.onerror = () => reject(new Error('Gagal membaca ' + file.name));
+      r.readAsText(file, 'UTF-8');
     });
-    // links
-    links.querySelectorAll('a').forEach(a=>{
-      a.classList.toggle('active', a.dataset.app===name);
-    });
-    // close mobile menu
-    links.classList.remove('open');
-    burger.classList.remove('open');
-    if(location.hash !== '#'+name) history.replaceState(null,'','#'+name);
   }
 
-  function current(){
-    return (location.hash || '').replace('#','') || ORDER[0];
+  async function loadFiles(fileList) {
+    const incoming = Array.from(fileList).filter(f => f.name.toLowerCase().endsWith('.txt'));
+    const skipped  = fileList.length - incoming.length;
+    if (!incoming.length) { showToast('Harap upload file .txt', 'error'); return; }
+
+    try {
+      const read = await Promise.all(incoming.map(readFile));
+      // append to existing selection, de-duplicating by file name
+      read.forEach(rf => {
+        const idx = filesData.findIndex(f => f.name === rf.name);
+        if (idx >= 0) filesData[idx] = rf; else filesData.push(rf);
+      });
+    } catch (err) { showToast(err.message, 'error'); return; }
+
+    renderFilePanel();
+    byId('btnConvert').disabled = filesData.length === 0;
+    let msg = filesData.length + ' file siap dikonversi';
+    if (skipped) msg += ' · ' + skipped + ' non-.txt diabaikan';
+    showToast('✓ ' + msg);
   }
 
-  burger.addEventListener('click', ()=>{
-    links.classList.toggle('open');
-    burger.classList.toggle('open');
+  function renderFilePanel() {
+    uploadZone.classList.add('has-file');
+    ['uploadIcon','uploadTitle','uploadSub'].forEach(id => byId(id).style.display = 'none');
+    const totalSize = filesData.reduce((s,f) => s + f.size, 0);
+    byId('fileInfo').style.display = 'flex';
+    byId('fileName').textContent = filesData.length + ' file' + (filesData.length>1?'s':'') + ' selected';
+    byId('fileSize').textContent = fmtBytes(totalSize);
+    const list = byId('fileList');
+    list.innerHTML = filesData.map((f,i) =>
+      `<span class="file-chip"><span class="idx">${i+1}</span>${esc(f.name)}</span>`).join('');
+    list.classList.add('visible');
+  }
+
+  function fmtBytes(b) {
+    if (b < 1024) return b + ' B';
+    if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+    return (b/1048576).toFixed(1) + ' MB';
+  }
+
+  // ──────────────────────────────────────────────────────────
+  //  parseNominal — Indonesian format
+  //  Comma = thousands separator, dot = decimal separator
+  //  "Rp       16,500.00"  → 16500
+  //  "Rp      491,892.00"  → 491892
+  //  "Rp      275,000.00"  → 275000
+  // ──────────────────────────────────────────────────────────
+  function parseNominal(raw) {
+    return parseFloat(
+      raw
+        .replace(/Rp/gi, '')  // remove "Rp"
+        .replace(/\s/g, '')   // remove all spaces
+        .replace(/,/g, '')    // remove thousands commas  → "16500.00"
+    ) || 0;
+  }
+
+  // ──────────────────────────────────────────────────────────
+  //  extractName — strip all non-name prefixes from Keterangan
+  //
+  //  Patterns handled (case-insensitive, applied in order):
+  //   "Update Plafon ... Driver [Name]"          → [Name]
+  //   "Tambah Kartu Ke-N Driver [Route] [Name]"  → [Name]
+  //   "Tambah Kartu Ke-N Driver [Name]"          → [Name]
+  //   "Tambah Kartu Ke-N [Name]"                 → [Name]
+  //   "Tambah Kartu Industri [Name]"             → [Name]
+  //   "Tambah Kartu Cadangan [Name]"             → [Name]
+  //   "Tambah Kartu [Name]"                      → [Name]
+  //   "Kartu N [Name]"                           → [Name]
+  //   "Driver [Route] [Name]" (≥2 words left)    → [Name]
+  //   "Driver [Name]"                            → [Name]
+  //   "Cadangan [Name]"                          → [Name]
+  // ──────────────────────────────────────────────────────────
+  function extractName(raw) {
+    let s = raw.replace(/\s+/g, ' ').trim();
+
+    const rules = [
+      // "Update Plafon ... Driver Name"
+      /^Update\s+Plafon\b.*?\bDriver\s+/i,
+      // "Tambah Kartu Ke-N Driver Route Name"  (route is one word, name has ≥1 word after)
+      /^Tambah\s+Kartu\s+Ke-\d+\s+Driver\s+\S+\s+(?=\S)/i,
+      // "Tambah Kartu Ke-N Driver Name"
+      /^Tambah\s+Kartu\s+Ke-\d+\s+Driver\s+/i,
+      // "Tambah Kartu Ke-N Name"
+      /^Tambah\s+Kartu\s+Ke-\d+\s+/i,
+      // "Tambah Kartu Industri Name"
+      /^Tambah\s+Kartu\s+Industri\s+/i,
+      // "Tambah Kartu Cadangan Name"
+      /^Tambah\s+Kartu\s+Cadangan\s+/i,
+      // "Tambah Kartu Name"
+      /^Tambah\s+Kartu\s+/i,
+      // "Kartu N Name"
+      /^Kartu\s+\d+\s+/i,
+      // "Driver Route Name"  — strip 'Driver' + one route word, only when ≥1 word remains
+      /^Driver\s+\S+\s+(?=\S)/i,
+      // "Driver Name"
+      /^Driver\s+/i,
+      // "Cadangan Name"
+      /^Cadangan\s+/i,
+    ];
+
+    for (const re of rules) {
+      if (re.test(s)) { s = s.replace(re, ''); break; }
+    }
+
+    return s.trim() || raw.trim(); // fallback to original if result empty
+  }
+
+  // ──────────────────────────────────────────────────────────
+  //  detectType — only TRANSACTION reports are supported.
+  //  "Laporan Registrasi Kartu" (EBS-0104) is skipped because it
+  //  has a different column layout (Saldo / Plafon, not Nominal).
+  // ──────────────────────────────────────────────────────────
+  function detectType(txt) {
+    const head = txt.slice(0, 1600).toUpperCase();
+    if (head.includes('REGISTRASI')) return { jenis: 'Registrasi',    ok: false };
+    if (head.includes('TOP UP'))     return { jenis: 'Top Up',        ok: true  };
+    if (head.includes('PAYMENT'))    return { jenis: 'Payment',       ok: true  };
+    if (head.includes('TRANSAKSI'))  return { jenis: 'Transaksi',     ok: true  };
+    return { jenis: 'Tidak dikenal', ok: false };
+  }
+
+  // Word-aware join of a 2-line wrapped fixed-width column.
+  // If line-1's column is FULL (last char non-space) the word
+  // continues mid-token onto line-2 → join with NO space.
+  // Otherwise line-1 ended on a word boundary → insert a space.
+  function smartJoin(l1, l2, a, b) {
+    const r1 = (l1 || '').padEnd(b, ' ').substring(a, b);
+    const r2 = (l2 || '').padEnd(b, ' ').substring(a, b);
+    const s1 = r1.replace(/\s+$/, '');
+    const s2 = r2.trim();
+    if (!s2) return s1.trim();
+    if (!s1) return s2;
+    const full = r1.charAt(b - a - 1) !== ' ';
+    return (s1 + (full ? '' : ' ') + s2).replace(/\s+/g, ' ').trim();
+  }
+
+  // Parse "DD/MM/YY[YY] HH:MM:SS" (Indonesian day-first) → timestamp.
+  // Unparseable dates return MAX so they sort to the end.
+  function parseWaktu(w) {
+    const m = (w || '').trim().match(/^(\d{1,4})[\/\-.](\d{1,2})[\/\-.](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+    if (!m) return Number.MAX_SAFE_INTEGER;
+    let [, p1, p2, p3, hh, mm, ss] = m;
+    let d, mo, y;
+    if (p1.length === 4) { y = +p1; mo = +p2; d = +p3; }          // YYYY/MM/DD
+    else { d = +p1; mo = +p2; y = +p3; if (y < 100) y += 2000; }   // DD/MM/YY
+    const t = new Date(y, (mo || 1) - 1, d || 1, +hh || 0, +mm || 0, +ss || 0).getTime();
+    return isNaN(t) ? Number.MAX_SAFE_INTEGER : t;
+  }
+
+  // ──────────────────────────────────────────────────────────
+  //  parseTxt — Fixed-width column positions (0-indexed):
+  //    No:[0,6]  Card:[7,23]  Date:[26,34](l1)  Time:[26,34](l2)
+  //    Nominal:[37,58]  Terminal:[59,103]  Keterangan:[103,132]
+  //  Returns unsorted, unnumbered rows tagged with `jenis`.
+  // ──────────────────────────────────────────────────────────
+  function parseTxt(txt, jenis) {
+    const lines = txt.split(/\r?\n/);
+    const txns  = [];
+    const col = (line, a, b) => line.padEnd(140, ' ').substring(a, b).trim();
+    const isLine1 = l => /^\s{0,5}\d+\s+\d{16}/.test(l);
+    const isLine2 = l => {
+      const dt = l.padEnd(140, ' ').substring(26, 34).trim();
+      return /^\d{2}:\d{2}:\d{2}$/.test(dt) && l.padEnd(140, ' ').substring(0, 6).trim() === '';
+    };
+
+    let i = 0;
+    while (i < lines.length) {
+      if (isLine1(lines[i])) {
+        const ln  = lines[i];
+        const ln2 = (i + 1 < lines.length && isLine2(lines[i + 1])) ? lines[++i] : '';
+        i++;
+        const card = col(ln, 7, 23);
+        const date = col(ln, 26, 34);
+        const time = col(ln2, 26, 34);
+        if (!card || !date) continue;
+        txns.push({
+          card,
+          name:     extractName(smartJoin(ln, ln2, 103, 132)),
+          waktu:    date + (time ? ' ' + time : ''),
+          nominal:  parseNominal(col(ln, 37, 58)),
+          terminal: smartJoin(ln, ln2, 59, 103),
+          jenis
+        });
+      } else {
+        i++;
+      }
+    }
+    return txns;
+  }
+
+  // Combine many files → dedupe identical rows → sort by date → number.
+  function combineRows(perFile) {
+    const all = [];
+    perFile.forEach(rows => rows.forEach(r => all.push(r)));
+    const seen = new Set();
+    const uniq = [];
+    for (const r of all) {
+      const key = [r.card, r.waktu, Math.round(r.nominal), r.terminal, r.name, r.jenis].join('|');
+      if (seen.has(key)) continue;
+      seen.add(key);
+      uniq.push(r);
+    }
+    uniq.forEach(r => { r._ts = parseWaktu(r.waktu); });
+    uniq.sort((a, b) =>
+      (a._ts - b._ts) ||
+      (a.card < b.card ? -1 : a.card > b.card ? 1 : 0) ||
+      a.name.localeCompare(b.name, 'id')
+    );
+    uniq.forEach((t, i) => { t.no = i + 1; });
+    return { rows: uniq, removed: all.length - uniq.length };
+  }
+
+  // Display rupiah with Indonesian format (dot=thousands)
+  function fmtRupiah(n) {
+    return 'Rp ' + Math.round(n).toLocaleString('id-ID');
+  }
+
+  // ── Convert (all uploaded files at once) ──
+  byId('btnConvert').addEventListener('click', () => {
+    if (!filesData.length) return;
+    try {
+      const perFile = [];
+      const skipped = [];
+      filesData.forEach(f => {
+        const { jenis, ok } = detectType(f.text);
+        if (!ok) { skipped.push(f.name + ' — ' + jenis); return; }
+        perFile.push(parseTxt(f.text, jenis));
+      });
+
+      const { rows, removed } = combineRows(perFile);
+      parsedData = rows;
+
+      if (!parsedData.length) {
+        showToast(skipped.length ? 'Semua file dilewati (bukan laporan transaksi)' : 'Tidak ada transaksi ditemukan', 'error');
+        byId('btnDownload').disabled = true;
+        byId('btnCopy').disabled = true;
+        return;
+      }
+
+      renderTable(parsedData);
+      updateStats(parsedData, removed);
+      byId('previewSection').classList.add('visible');
+      byId('btnDownload').disabled = false;
+      byId('btnCopy').disabled = false;
+
+      let msg = '✓ ' + parsedData.length.toLocaleString('id-ID') + ' transaksi';
+      if (removed) msg += ' · ' + removed.toLocaleString('id-ID') + ' duplikat dihapus';
+      showToast(msg);
+      if (skipped.length) setTimeout(() => showToast('⚠ Dilewati: ' + skipped.join(' | '), 'error'), 700);
+    } catch(err) {
+      console.error(err);
+      showToast('Error: ' + err.message, 'error');
+    }
   });
 
-  window.addEventListener('hashchange', ()=> show(current()));
-  show(current());
-</script>
+  // ── Render Preview (grouped by date) ──
+  function renderTable(data) {
+    let prevDate = null, gIdx = 0, html = '';
+    data.forEach(row => {
+      const dateOnly = (row.waktu || '').split(' ')[0];
+      const changed = dateOnly !== prevDate;
+      if (changed) { gIdx++; prevDate = dateOnly; }
+      const cls = ((changed ? 'name-divider ' : '') + (gIdx % 2 === 1 ? 'group-odd' : '')).trim();
+      html +=
+        `<tr${cls ? ` class="${cls}"` : ''}>` +
+        `<td class="col-no">${row.no}</td>` +
+        `<td class="col-card">${esc(row.card)}</td>` +
+        `<td class="col-name">${esc(row.name)}</td>` +
+        `<td class="col-time">${esc(row.waktu)}</td>` +
+        `<td class="col-nominal">${fmtRupiah(row.nominal)}</td>` +
+        `<td class="col-location">${esc(row.terminal)}</td>` +
+        `<td class="col-jenis">${esc(row.jenis || '')}</td>` +
+        `</tr>`;
+    });
+    byId('previewBody').innerHTML = html;
+    byId('rowCount').textContent = data.length.toLocaleString('id-ID') + ' rows';
+  }
+
+  function updateStats(data, removed) {
+    const total   = data.reduce((s,r) => s+r.nominal, 0);
+    const cards   = new Set(data.map(r=>r.card)).size;
+    const persons = new Set(data.map(r=>r.name)).size;
+    byId('statFiles').textContent   = filesData.length;
+    byId('statRows').textContent    = data.length.toLocaleString('id-ID');
+    byId('statDupes').textContent   = (removed || 0).toLocaleString('id-ID');
+    byId('statCards').textContent   = cards;
+    byId('statPersons').textContent = persons;
+    byId('statTotal').textContent   = fmtRupiah(total);
+    byId('statsBar').classList.add('visible');
+  }
+
+  function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // Column order shared by download + copy
+  const OUT_HDR = ['No','No. Kartu Fleet','Nama Pemilik Kartu','Waktu','Nominal Transaksi','Lokasi / Terminal','Jenis'];
+  const rowToArr = r => [r.no, r.card, r.name, r.waktu, Math.round(r.nominal), r.terminal, r.jenis];
+
+  // ── Download XLSX (single file · single sheet · all data · date-sorted · deduped) ──
+  byId('btnDownload').addEventListener('click', () => {
+    if (!parsedData.length) return;
+    const rows = parsedData.map(rowToArr);
+    const ws = XLSX.utils.aoa_to_sheet([OUT_HDR, ...rows]);
+    ws['!cols'] = [{wch:6},{wch:20},{wch:30},{wch:20},{wch:18},{wch:58},{wch:12}];
+    for (let R=1; R<=rows.length; R++) {
+      const a = XLSX.utils.encode_cell({r:R, c:4});       // Nominal column → number format
+      if (ws[a]) { ws[a].t='n'; ws[a].z='#,##0'; }
+    }
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Transaksi');
+    XLSX.writeFile(wb, 'fleet_card_transaksi.xlsx');
+    showToast('✓ Diunduh: fleet_card_transaksi.xlsx (' + parsedData.length.toLocaleString('id-ID') + ' baris)');
+  });
+
+  // ── Copy Table (TSV · data rows only · paste into an existing sheet) ──
+  byId('btnCopy').addEventListener('click', async () => {
+    if (!parsedData.length) return;
+    const tsv = parsedData.map(r => rowToArr(r).join('\t')).join('\n');
+    const ok = () => showToast('✓ ' + parsedData.length.toLocaleString('id-ID') + ' baris disalin — paste ke Excel (tanpa header)');
+    try {
+      await navigator.clipboard.writeText(tsv);
+      ok();
+    } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = tsv; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      try { document.execCommand('copy'); ok(); }
+      catch (_) { showToast('Gagal menyalin ke clipboard', 'error'); }
+      document.body.removeChild(ta);
+    }
+  });
+
+  // ── Reset ──
+  byId('btnReset').addEventListener('click', () => {
+    fileInput.value = ''; filesData = []; parsedData = [];
+    uploadZone.classList.remove('has-file');
+    ['uploadIcon','uploadTitle','uploadSub'].forEach(id => byId(id).style.display = '');
+    byId('fileInfo').style.display = 'none';
+    const fl = byId('fileList'); fl.innerHTML = ''; fl.classList.remove('visible');
+    byId('btnConvert').disabled = true;
+    byId('btnDownload').disabled = true;
+    byId('btnCopy').disabled = true;
+    byId('previewSection').classList.remove('visible');
+    byId('statsBar').classList.remove('visible');
+    byId('previewBody').innerHTML = '';
+  });
+
+  // ── Toast ──
+  function showToast(msg, type) {
+    const t = byId('toast');
+    t.textContent = msg;
+    t.className = 'toast' + (type==='error'?' error':'');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+})();
+  </script>
+  <script data-app="do">
+(function(){
+var R = document.getElementById("panel-do");
+function byId(id){ return R.querySelector('[id="'+id+'"]'); }
+
+        // DOM Elements
+        const dropZone = byId('dropZone');
+        const fileInput = byId('fileInput');
+        const rawInput = byId('rawInput');
+        const btnExtract = byId('btnExtract');
+        const btnAddRow = byId('btnAddRow');
+        const btnClipboard = byId('btnClipboard');
+        const btnExport = byId('btnExport');
+        const tableBody = byId('tableBody');
+        const emptyState = byId('emptyState');
+        
+        // Stats
+        const statTotal = byId('statTotal');
+        const statTypes = byId('statTypes');
+        const statLocations = byId('statLocations');
+
+        // State Store
+        let extractedData = [];
+
+        // Common Car Types in Indonesia (Keywords for parsing)
+        const CAR_TYPES = [
+            'Grand Max', 'Gran Max', 'Blind Van', 'Box', 'Traga', 'L300', 
+            'Engkel', 'Double', 'CDE', 'CDD', 'Fuso', 'Tronton', 'Pick Up', 'Pickup', 'Wingbox'
+        ];
+
+        // File upload click handlers
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        // Drag and drop handlers
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                rawInput.value = e.target.result;
+                showToast(`Berhasil membaca file: ${file.name}`);
+            };
+            reader.readAsText(file);
+        }
+
+        // Extractor Logic
+        btnExtract.addEventListener('click', () => {
+            const text = rawInput.value.trim();
+            if (!text) {
+                alert('Silakan masukkan data teks terlebih dahulu!');
+                return;
+            }
+
+            const lines = text.split('\n');
+            const newRecords = [];
+
+            lines.forEach(line => {
+                if (!line.trim()) return;
+
+                // Check if this is the tab-separated structured format from datado.txt
+                if (line.includes('\t') && line.includes('/')) {
+                    const parts = line.split('\t');
+                    
+                    // The layout: [Date] \t [Carrier / Plate (Type) / Expense] \t [Client (Location) Routing(X)] \t ...
+                    const vehiclePart = parts.find(p => p.includes('/'));
+                    const clientPart = parts.find(p => p.includes('Routing ('));
+
+                    if (vehiclePart && clientPart) {
+                        let tanggal = parts[0] ? parts[0].trim() : '-';
+                        let nopol = '-';
+                        let carType = '-';
+                        let clientLocation = '-';
+
+                        // Extract from: PT Wastec International / B 9488 PEJ (HeadTriller) / [No Expense]
+                        const subParts = vehiclePart.split('/');
+                        if (subParts.length >= 2) {
+                            const rawVehicle = subParts[1].trim(); // "B 9488 PEJ (HeadTriller)"
+                            
+                            // Extract Car Type in parenthesis
+                            const typeMatch = rawVehicle.match(/\(([^)]+)\)/);
+                            if (typeMatch) {
+                                carType = typeMatch[1].trim();
+                            }
+                            
+                            // Extract Nopol before parenthesis
+                            nopol = rawVehicle.replace(/\([^)]+\)/, '').trim().toUpperCase();
+                        }
+
+                        // Extract from: DOLPHIN FOOD & BEVERAGES INDUSTRY (Kab. Tangerang) Routing (0)
+                        clientLocation = clientPart.replace(/\s*Routing\s*\(\d+\)\s*/i, '').trim();
+
+                        newRecords.push({
+                            tanggal: tanggal,
+                            nopol: nopol,
+                            carType: carType,
+                            clientLocation: clientLocation,
+                            solar: '',
+                            tol: '',
+                            insentif: '',
+                            mel: '',
+                            dl: '',
+                            km: ''
+                        });
+                        return; // Processed structured line successfully
+                    }
+                }
+
+                // Fallback: Smart regex extraction for unstructured / pasted text
+                let tanggal = '-';
+                let nopol = '';
+                let carType = '';
+                let clientLocation = '';
+
+                // Try to find a date pattern (e.g. 25-Jun-26)
+                const dateRegex = /\b\d{1,2}-[A-Za-z]{3}-\d{2,4}(?:\s+\d{2}:\d{2})?\b/;
+                const matchDate = line.match(dateRegex);
+                if (matchDate) {
+                    tanggal = matchDate[0];
+                    line = line.replace(matchDate[0], ' ');
+                }
+
+                // 1. Extract Nopol (Nomor Polisi)
+                const nopolRegex = /\b([A-Z]{1,2})\s*(\d{1,4})\s*([A-Z]{1,3})\b/i;
+                const matchNopol = line.match(nopolRegex);
+                
+                if (matchNopol) {
+                    nopol = `${matchNopol[1]} ${matchNopol[2]} ${matchNopol[3]}`.toUpperCase();
+                    line = line.replace(matchNopol[0], ' ');
+                } else {
+                    // Skip unstructured lines that don't have a license plate (helps filter out header/id junk lines)
+                    return;
+                }
+
+                // 2. Extract Jenis Mobil using known list
+                for (const type of CAR_TYPES) {
+                    const typeRegex = new RegExp(`\\b${type}\\b`, 'i');
+                    if (typeRegex.test(line)) {
+                        carType = type;
+                        line = line.replace(typeRegex, ' ');
+                        break;
+                    }
+                }
+
+                // 3. Clean up the remaining line to determine Client Location (Lokasi Klien)
+                let remaining = line
+                    .replace(/\b(mobil|truk|truck|tujuan|ke|lokasi|client|klien)\b/gi, ' ')
+                    .replace(/[-|/\\,;:]/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+
+                clientLocation = remaining || '-';
+
+                newRecords.push({
+                    tanggal: tanggal,
+                    nopol: nopol || '-',
+                    carType: carType || '-',
+                    clientLocation: clientLocation,
+                    solar: '',
+                    tol: '',
+                    insentif: '',
+                    mel: '',
+                    dl: '',
+                    km: ''
+                });
+            });
+
+            extractedData = [...extractedData, ...newRecords];
+            renderTable();
+            updateStats();
+            showToast(`Berhasil mengekstrak ${newRecords.length} data!`);
+        });
+
+        // Add Row Manually
+        btnAddRow.addEventListener('click', () => {
+            const newRecord = {
+                tanggal: '',
+                nopol: '',
+                carType: '',
+                clientLocation: '',
+                solar: '',
+                tol: '',
+                insentif: '',
+                mel: '',
+                dl: '',
+                km: ''
+            };
+            extractedData.push(newRecord);
+            renderTable();
+            updateStats();
+            
+            // Focus on the first cell of the newly added row
+            const rows = tableBody.querySelectorAll('tr');
+            if (rows.length > 0) {
+                const firstInput = rows[rows.length - 1].querySelector('input');
+                if (firstInput) firstInput.focus();
+            }
+        });
+
+        // Delete Row
+        function deleteRow(index) {
+            extractedData.splice(index, 1);
+            renderTable();
+            updateStats();
+            showToast('Baris berhasil dihapus');
+        }
+
+        // Render Table Content
+        function renderTable() {
+            tableBody.innerHTML = '';
+            
+            if (extractedData.length === 0) {
+                emptyState.style.display = 'flex';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+
+            extractedData.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                
+                tr.innerHTML = `
+                    <td>
+                        <input type="text" class="editable-cell" value="${row.tanggal}" 
+                            onchange="DO.updateCell(${index}, 'tanggal', this.value)" placeholder="Tanggal">
+                    </td>
+                    <td>
+                        <input type="text" class="editable-cell nopol-cell" value="${row.nopol}" 
+                            onchange="DO.updateCell(${index}, 'nopol', this.value)" placeholder="Nopol">
+                    </td>
+                    <td>
+                        <input type="text" class="editable-cell" value="${row.carType}" 
+                            onchange="DO.updateCell(${index}, 'carType', this.value)" placeholder="Jenis Mobil">
+                    </td>
+                    <td>
+                        <input type="text" class="editable-cell" value="${row.clientLocation}" 
+                            onchange="DO.updateCell(${index}, 'clientLocation', this.value)" placeholder="Lokasi Klien">
+                    </td>
+                    <td>
+                        <input type="text" class="editable-cell" value="${row.solar}" 
+                            onchange="DO.updateCell(${index}, 'solar', this.value)" placeholder="-">
+                    </td>
+                    <td>
+                        <input type="text" class="editable-cell" value="${row.tol}" 
+                            onchange="DO.updateCell(${index}, 'tol', this.value)" placeholder="-">
+                    </td>
+                    <td>
+                        <input type="text" class="editable-cell" value="${row.insentif}" 
+                            onchange="DO.updateCell(${index}, 'insentif', this.value)" placeholder="-">
+                    </td>
+                    <td>
+                        <input type="text" class="editable-cell" value="${row.mel}" 
+                            onchange="DO.updateCell(${index}, 'mel', this.value)" placeholder="-">
+                    </td>
+                    <td>
+                        <input type="text" class="editable-cell" value="${row.dl}" 
+                            onchange="DO.updateCell(${index}, 'dl', this.value)" placeholder="-">
+                    </td>
+                    <td>
+                        <input type="text" class="editable-cell" value="${row.km}" 
+                            onchange="DO.updateCell(${index}, 'km', this.value)" placeholder="-">
+                    </td>
+                    <td style="text-align: center;">
+                        <div class="action-cell">
+                            <button class="btn-icon btn-icon-danger" onclick="DO.deleteRow(${index})" title="Hapus Baris">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Live Update State Cell value
+        window.updateCell = function(index, field, value) {
+            if (extractedData[index]) {
+                extractedData[index][field] = value;
+                if (field === 'carType' || field === 'clientLocation') {
+                    updateStats();
+                }
+            }
+        };
+
+        // Update Dashboard Statistics
+        function updateStats() {
+            statTotal.innerText = extractedData.length;
+            
+            // Unique car types
+            const uniqueTypes = new Set(
+                extractedData
+                    .map(item => item.carType.trim().toLowerCase())
+                    .filter(type => type && type !== '-')
+            );
+            statTypes.innerText = uniqueTypes.size;
+
+            // Unique locations
+            const uniqueLocations = new Set(
+                extractedData
+                    .map(item => item.clientLocation.trim().toLowerCase())
+                    .filter(loc => loc && loc !== '-')
+            );
+            statLocations.innerText = uniqueLocations.size;
+        }
+
+        // Copy Tab-Separated Data to Clipboard (for direct paste to Excel)
+        btnClipboard.addEventListener('click', () => {
+            if (extractedData.length === 0) {
+                alert('Tidak ada data untuk disalin!');
+                return;
+            }
+
+            const headers = ['Tanggal', 'Nopol', 'Jenis Mobil', 'Lokasi Klien', 'Solar', 'Tol', 'Insentif', 'Mel', 'DL', 'KM'];
+            let outputText = headers.join('\t') + '\n';
+
+            extractedData.forEach(row => {
+                const line = [
+                    row.tanggal,
+                    row.nopol,
+                    row.carType,
+                    row.clientLocation,
+                    row.solar,
+                    row.tol,
+                    row.insentif,
+                    row.mel,
+                    row.dl,
+                    row.km
+                ];
+                outputText += line.join('\t') + '\n';
+            });
+
+            navigator.clipboard.writeText(outputText)
+                .then(() => {
+                    showToast('Tabel berhasil disalin ke clipboard! Siap dipaste ke Excel.');
+                })
+          
+                .catch(() => { alert('Gagal menyalin ke clipboard.'); });
+        });
+    
+window.DO = {updateCell:(typeof updateCell==="function"?updateCell:undefined),deleteRow:(typeof deleteRow==="function"?deleteRow:undefined)};
+})();
+  </script>
+  <script data-app="extractor">
+(function(){
+var R = document.getElementById("panel-extractor");
+function byId(id){ return R.querySelector('[id="'+id+'"]'); }
+
+function openFilePicker(){ var el=byId("fileInput"); if(el) el.click(); }
+
+        let excelData = null;
+        let excelRincianDate = ''; // Rincian date parsed from an uploaded Excel file (cell A2)
+        let currentTab = 'json';
+        let currentMode = 'medical';
+        let currentDataType = 'solar-tol'; // 'solar-tol' or 'insentif-mel'
+
+        function switchMode() {
+            const mode = R.querySelector('input[name="mode"]:checked').value;
+            currentMode = mode;
+            updateDataTypeSelectorVisibility();
+            clearAll();
+        }
+
+        function switchDataType() {
+            const dataType = R.querySelector('input[name="dataType"]:checked').value;
+            currentDataType = dataType;
+
+            // Show/hide specific nopol section
+            const specificNopolSection = byId('specificNopolSection');
+            if (dataType === 'insentif-mel') {
+                specificNopolSection.style.display = 'block';
+            } else {
+                specificNopolSection.style.display = 'none';
+            }
+
+            // Clear output when switching data type
+            byId('outputBox').textContent = '';
+            byId('successMsg').innerHTML = '';
+        }
+
+        function updateDataTypeSelectorVisibility() {
+            const selector = byId('dataTypeSelector');
+            if (currentMode === 'medical') {
+                selector.style.display = 'flex';
+            } else {
+                selector.style.display = 'none';
+            }
+        }
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+            R.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            R.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            event.target.classList.add('active');
+            byId(tabName + '-tab').classList.add('active');
+
+            updateDataTypeSelectorVisibility();
+            clearMessages();
+        }
+
+        function clearMessages() {
+            byId('errorMsgJson').innerHTML = '';
+            byId('errorMsgExcel').innerHTML = '';
+            byId('errorMsgSpreadsheet').innerHTML = '';
+            byId('errorMsgToJson').innerHTML = '';
+            byId('successMsg').innerHTML = '';
+            byId('successMsgJson').innerHTML = '';
+        }
+
+        function parseAmount(str) {
+            if (!str) return '-';
+            const cleaned = str.replace(/[Rp\s.,]/g, '');
+            const num = parseInt(cleaned);
+            if (isNaN(num) || num === 0) return '-';
+            return num.toLocaleString('id-ID');
+        }
+
+        function combineTwoValues(val1, val2) {
+            // Helper function to parse a formatted number back to integer
+            function parseFormattedNumber(str) {
+                if (!str || str === '-') return 0;
+                const cleaned = str.replace(/[.,]/g, '');
+                const num = parseInt(cleaned);
+                return isNaN(num) ? 0 : num;
+            }
+
+            const num1 = parseFormattedNumber(val1);
+            const num2 = parseFormattedNumber(val2);
+            const total = num1 + num2;
+
+            if (total === 0) return '-';
+            return total.toLocaleString('id-ID');
+        }
+
+        function combineThreeValues(val1, val2, val3) {
+            // Helper function to parse a formatted number back to integer
+            function parseFormattedNumber(str) {
+                if (!str || str === '-') return 0;
+                const cleaned = str.replace(/[.,]/g, '');
+                const num = parseInt(cleaned);
+                return isNaN(num) ? 0 : num;
+            }
+
+            const num1 = parseFormattedNumber(val1);
+            const num2 = parseFormattedNumber(val2);
+            const num3 = parseFormattedNumber(val3);
+            const total = num1 + num2 + num3;
+
+            if (total === 0) return '-';
+            return total.toLocaleString('id-ID');
+        }
+
+        function combineFourValues(val1, val2, val3, val4) {
+            function parseFormattedNumber(str) {
+                if (!str || str === '-') return 0;
+                const cleaned = str.replace(/[.,]/g, '');
+                const num = parseInt(cleaned);
+                return isNaN(num) ? 0 : num;
+            }
+            const total = parseFormattedNumber(val1) + parseFormattedNumber(val2) +
+                parseFormattedNumber(val3) + parseFormattedNumber(val4);
+            if (total === 0) return '-';
+            return total.toLocaleString('id-ID');
+        }
+
+        function parseSpecificNopolInput() {
+            const input = byId('specificNopolInput').value.trim();
+            if (!input) return [];
+
+            // Split by various delimiters: comma, newline, dash
+            let nopols = input.split(/[,\n-]+/)
+                .map(n => n.trim())
+                .filter(n => n.length > 0)
+                .map(n => n.toUpperCase().replace(/\s+/g, ' ')); // Normalize spaces
+
+            return nopols;
+        }
+
+        function isNopolInSpecificList(nopol, specificList) {
+            if (!specificList || specificList.length === 0) return false;
+
+            // Normalize the nopol for comparison
+            const normalizedNopol = nopol.toUpperCase().replace(/\s+/g, ' ').replace(/[\*]/g, '');
+
+            // Check if any item in specificList matches this nopol
+            for (let specific of specificList) {
+                // Remove common prefixes and extra characters for matching
+                const cleanSpecific = specific.replace(/^B\s*/i, '').trim();
+                const cleanNopol = normalizedNopol.replace(/^B\s*/i, '').trim();
+
+                // Check if the nopol contains the specific number
+                if (cleanNopol.includes(cleanSpecific) || cleanSpecific.includes(cleanNopol)) {
+                    return true;
+                }
+
+                // Also try matching just the numbers
+                const specificNumbers = cleanSpecific.replace(/[^0-9]/g, '');
+                const nopolNumbers = cleanNopol.replace(/[^0-9]/g, '');
+
+                if (specificNumbers && nopolNumbers &&
+                    (nopolNumbers.includes(specificNumbers) || specificNumbers.includes(nopolNumbers))) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // ── Dynamic column detection ──────────────────────────────────────────
+        // Keywords that identify the "TOTAL" label column — the column that holds
+        // Rincian / Solar / Tol / Insentif / Mel / Parkir / Admin TF / Supir-Kenek
+        // 2 RIT / Solar tol bongkar. This is what makes the converter dynamic:
+        // instead of assuming fixed column positions, we find the column by content.
+        const TOTAL_KEYWORDS = ['Rincian', 'Solar', 'Tol', 'Insentif', 'Mel', 'Parkir',
+            'Admin TF', 'Supir/Kenek 2 RIT', 'Solar tol bongkar'];
+
+        // Scan every cell, tally which column contains the most TOTAL keywords, and
+        // return that column index. Works regardless of how many leading columns the
+        // source spreadsheet has (6, 7, 8, …).
+        function detectTotalColumn(rows) {
+            const tally = {};
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i] || [];
+                for (let c = 0; c < row.length; c++) {
+                    const cell = String(row[c] || '').trim();
+                    if (TOTAL_KEYWORDS.some(kw => cell === kw || cell.startsWith(kw))) {
+                        tally[c] = (tally[c] || 0) + 1;
+                    }
+                }
+            }
+            let bestCol = 5; // default (standard 7-col format)
+            let bestCount = 0;
+            for (const [col, count] of Object.entries(tally)) {
+                if (count > bestCount) { bestCount = count; bestCol = parseInt(col); }
+            }
+            return bestCol;
+        }
+
+        // Recognises all Medical vehicle header types: Colt Diesel, L-300, CDD (any variant), CDE (any variant)
+        const MEDICAL_VEHICLE_TYPES = ['Colt Diesel', 'L-300', 'CDD', 'CDE'];
+        function isMedicalVehicleHeader(mobil) {
+            if (!mobil) return false;
+            return MEDICAL_VEHICLE_TYPES.some(t => mobil.includes(t));
+        }
+
+        function processData(data, dataType = 'solar-tol', specificNopols = []) {
+            const vehicles = [];
+
+            for (let i = 0; i < data.length; i++) {
+                const row = data[i];
+
+                if (row.MOBIL && isMedicalVehicleHeader(row.MOBIL)) {
+                    const nopol = data[i + 1]?.MOBIL || '';
+                    const drivers = data[i + 2]?.MOBIL || '';
+
+                    // Skip if no valid driver name
+                    const driversUpper = drivers.toUpperCase();
+                    if (!drivers ||
+                        drivers.trim() === '' ||
+                        drivers.startsWith('-') ||
+                        driversUpper.includes('PERBAIKAN') ||
+                        driversUpper.includes('MAINTENANCE') ||
+                        driversUpper.includes('MESIN')) {
+                        continue;
+                    }
+
+                    if (nopol && drivers &&
+                        !isMedicalVehicleHeader(nopol) &&
+                        !isMedicalVehicleHeader(drivers)) {
+
+                        // Check if this nopol needs special treatment (Solar + Insentif + Mel)
+                        const isSpecialNopol = dataType === 'insentif-mel' && isNopolInSpecificList(nopol, specificNopols);
+
+                        let solarArray = [];
+                        let value1Array = []; // Solar or Insentif
+                        let value2Array = []; // Tol or Mel
+                        let supirKenek2RitArray = [];
+                        let hasRit2 = false;
+                        let rit2Drivers = '';
+
+                        // Clean driver names: strip [ ] brackets, normalize / separator to -
+                        function cleanDriverName(name) {
+                            let s = name.trim();
+                            s = s.replace(/^\[|\]$/g, '').trim();
+                            s = s.replace(/\s*\/\s*/g, ' - ');
+                            return s;
+                        }
+
+                        for (let j = i + 1; j < Math.min(i + 50, data.length); j++) {
+                            if (data[j].MOBIL && isMedicalVehicleHeader(data[j].MOBIL)) {
+                                break;
+                            }
+
+                            // Check for RIT 2 and extract driver names
+                            if (data[j].TUJUAN && (data[j].TUJUAN.includes('RIT 2') || data[j].TUJUAN.includes('Rit 2') || data[j].TUJUAN.includes('rit 2'))) {
+                                hasRit2 = true;
+                                // Extract driver names after "RIT 2"
+                                const tujuan = data[j].TUJUAN;
+                                const rit2Match = tujuan.match(/RIT\s*2\s+(.+)/i);
+                                if (rit2Match) {
+                                    rit2Drivers = rit2Match[1].trim();
+                                }
+                            }
+
+                            // Always collect Solar if this is a special nopol in insentif-mel mode
+                            if (isSpecialNopol && data[j].TOTAL === 'Solar') {
+                                const value = data[j]['  Nominal \nPengajuan '];
+                                if (value && value.trim() && !value.includes('Rp-')) {
+                                    solarArray.push(parseAmount(value));
+                                } else {
+                                    solarArray.push('-');
+                                }
+                            }
+
+                            // Determine what to look for based on dataType
+                            const lookFor1 = dataType === 'solar-tol' ? 'Solar' : 'Insentif';
+                            const lookFor2 = dataType === 'solar-tol' ? 'Tol' : 'Mel';
+
+                            if (data[j].TOTAL === lookFor1) {
+                                const value = data[j]['  Nominal \nPengajuan '];
+                                if (value && value.trim() && !value.includes('Rp-')) {
+                                    value1Array.push(parseAmount(value));
+                                } else {
+                                    value1Array.push('-');
+                                }
+                            }
+
+                            if (data[j].TOTAL === lookFor2) {
+                                const value = data[j]['  Nominal \nPengajuan '];
+                                if (value && value.trim() && !value.includes('Rp-')) {
+                                    value2Array.push(parseAmount(value));
+                                } else {
+                                    value2Array.push('-');
+                                }
+                            }
+
+                            // Collect Supir/Kenek 2 RIT (only present in RIT 2 block)
+                            if (data[j].TOTAL === 'Supir/Kenek 2 RIT') {
+                                const value = data[j]['  Nominal \nPengajuan '];
+                                if (value && value.trim() && !value.includes('Rp-')) {
+                                    supirKenek2RitArray.push(parseAmount(value));
+                                } else {
+                                    supirKenek2RitArray.push('-');
+                                }
+                            }
+                        }
+
+                        const cleanNopol = nopol.replace(/\*/g, '').trim();
+                        const cleanDrivers = cleanDriverName(drivers);
+
+                        // For insentif-mel mode, combine the values
+                        if (dataType === 'insentif-mel') {
+                            if (isSpecialNopol) {
+                                // Special nopol: Solar + Insentif + Mel
+                                vehicles.push({
+                                    nopol: cleanNopol,
+                                    drivers: cleanDrivers,
+                                    combinedValue: combineThreeValues(solarArray[0], value1Array[0], value2Array[0])
+                                });
+
+                                if (hasRit2 && (solarArray.length > 1 || value1Array.length > 1 || value2Array.length > 1)) {
+                                    vehicles.push({
+                                        nopol: cleanNopol + ' (RIT 2)',
+                                        drivers: rit2Drivers || cleanDrivers,
+                                        combinedValue: combineFourValues(solarArray[1], value1Array[1], value2Array[1], supirKenek2RitArray[0])
+                                    });
+                                }
+                            } else {
+                                // Normal nopol: Insentif + Mel only
+                                vehicles.push({
+                                    nopol: cleanNopol,
+                                    drivers: cleanDrivers,
+                                    combinedValue: combineTwoValues(value1Array[0], value2Array[0])
+                                });
+
+                                if (hasRit2 && (value1Array.length > 1 || value2Array.length > 1)) {
+                                    vehicles.push({
+                                        nopol: cleanNopol + ' (RIT 2)',
+                                        drivers: rit2Drivers || cleanDrivers,
+                                        combinedValue: combineThreeValues(value1Array[1], value2Array[1], supirKenek2RitArray[0])
+                                    });
+                                }
+                            }
+                        } else {
+                            vehicles.push({
+                                nopol: cleanNopol,
+                                drivers: cleanDrivers,
+                                value1: value1Array[0] || '-',
+                                value2: value2Array[0] || '-'
+                            });
+
+                            if (hasRit2 && (value1Array.length > 1 || value2Array.length > 1)) {
+                                vehicles.push({
+                                    nopol: cleanNopol + ' (RIT 2)',
+                                    drivers: rit2Drivers || cleanDrivers,
+                                    value1: value1Array[1] || '-',
+                                    value2: value2Array[1] || '-'
+                                });
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            return vehicles;
+        }
+
+        function processDataIndustrial(data) {
+            const vehicles = [];
+            const vehicleTypes = ['CDD', 'Fuso', 'FUSO', 'Wingbox', 'Trailer Wingbox'];
+
+            for (let i = 0; i < data.length; i++) {
+                const row = data[i];
+                const mobil = row.MOBIL || '';
+
+                // Check if this row contains a vehicle type
+                let isVehicleType = false;
+                for (const vType of vehicleTypes) {
+                    if (mobil.includes(vType)) {
+                        isVehicleType = true;
+                        break;
+                    }
+                }
+
+                if (isVehicleType) {
+                    // Next row should have the plate number
+                    const nopol = data[i + 1]?.MOBIL || '';
+
+                    // Row after that should have driver name(s)
+                    let drivers = data[i + 2]?.MOBIL || '';
+
+                    // Skip if no valid plate number or driver
+                    if (!nopol || !drivers || nopol.trim() === '' || drivers.trim() === '') {
+                        continue;
+                    }
+
+                    // Skip if driver row contains maintenance keywords
+                    const driversUpper = drivers.toUpperCase();
+                    if (driversUpper.includes('PERBAIKAN') ||
+                        driversUpper.includes('MAINTENANCE') ||
+                        driversUpper.includes('MESIN')) {
+                        continue;
+                    }
+
+                    // Find Solar and Tol values in the following rows
+                    let solarValue = '-';
+                    let tolValue = '-';
+
+                    // Look ahead for expense rows (Solar, Tol, etc.)
+                    for (let j = i + 1; j < Math.min(i + 20, data.length); j++) {
+                        const expenseRow = data[j];
+
+                        // Check if we've hit another vehicle type
+                        let hitNextVehicle = false;
+                        for (const vType of vehicleTypes) {
+                            if (expenseRow.MOBIL && expenseRow.MOBIL.includes(vType)) {
+                                hitNextVehicle = true;
+                                break;
+                            }
+                        }
+                        if (hitNextVehicle) break;
+
+                        // Search through ALL properties of the row to find Solar and Tol
+                        const rowValues = Object.values(expenseRow);
+                        let foundSolar = false;
+                        let foundTol = false;
+
+                        // First, check if this row contains Solar or Tol
+                        for (let k = 0; k < rowValues.length; k++) {
+                            const val = String(rowValues[k] || '');
+                            if (val.includes('Solar')) {
+                                foundSolar = true;
+                            }
+                            if (val.includes('Tol')) {
+                                foundTol = true;
+                            }
+                        }
+
+                        // If we found Solar or Tol, look for the amount value
+                        // The amount is usually the rightmost value that contains "Rp"
+                        if (foundSolar || foundTol) {
+                            let expenseValue = '';
+                            // Search from right to left for a value containing "Rp"
+                            for (let k = rowValues.length - 1; k >= 0; k--) {
+                                const val = String(rowValues[k] || '').trim();
+                                if (val && val.includes('Rp') && !val.includes('Rp -') && !val.includes('Rp-')) {
+                                    expenseValue = val;
+                                    break;
+                                }
+                            }
+
+                            if (expenseValue) {
+                                if (foundSolar && solarValue === '-') {
+                                    solarValue = parseAmount(expenseValue);
+                                }
+                                if (foundTol && tolValue === '-') {
+                                    tolValue = parseAmount(expenseValue);
+                                }
+                            }
+                        }
+                    }
+
+                    // Clean up the data
+                    const cleanNopol = nopol.replace(/\*/g, '').trim();
+                    const cleanDrivers = drivers.trim();
+
+                    vehicles.push({
+                        nopol: cleanNopol,
+                        drivers: cleanDrivers,
+                        value1: solarValue,
+                        value2: tolValue
+                    });
+                }
+            }
+
+            return vehicles;
+        }
+
+        // Returns today's date + 1 in Indonesian format, e.g. "24 Juni 2026"
+        function getRincianDate() {
+            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            const d = new Date();
+            d.setDate(d.getDate() + 1);
+            return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+        // Formats an Excel cell (e.g. A2) into "24 Juni 2026". Handles Excel date
+        // serials, JS Date values, and plain-text dates; falls back to the cell's
+        // displayed text if it isn't a recognisable date.
+        function formatExcelDate(cell) {
+            if (!cell) return '';
+            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            let d = null;
+            if (cell.v instanceof Date) {
+                d = cell.v;
+            } else if (typeof cell.v === 'number' && cell.v > 0 && XLSX.SSF && XLSX.SSF.parse_date_code) {
+                const o = XLSX.SSF.parse_date_code(cell.v);
+                if (o && o.y) d = new Date(o.y, o.m - 1, o.d);
+            }
+            if (d && !isNaN(d.getTime())) {
+                return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+            }
+            // Fallback: use the cell's formatted text / raw value as-is
+            return String(cell.w || cell.v || '').trim();
+        }
+
+        function displayOutput(vehicles, dataType = 'solar-tol') {
+            if (vehicles.length === 0) {
+                throw new Error('No vehicle data found');
+            }
+
+            // Prepend a "Rincian <date>" line:
+            //  • JSON & Copy-from-Spreadsheet → today + 1
+            //  • Excel upload → date read from the file itself (cell A2)
+            let rincianDate = '';
+            if (currentTab === 'excel') {
+                rincianDate = excelRincianDate || getRincianDate();
+            } else if (currentTab === 'json' || currentTab === 'spreadsheet') {
+                rincianDate = getRincianDate();
+            }
+            const rincianHeader = rincianDate ? 'Rincian ' + rincianDate + '\n\n' : '';
+
+            // Determine column headers based on data type
+            let output;
+            if (dataType === 'insentif-mel') {
+                output = rincianHeader + 'Nopol | Nama Supir—Kenek | Total Insentif + Mel\n';
+            } else {
+                output = rincianHeader + 'Nopol | Nama Supir—Kenek | Solar | Tol\n';
+            }
+
+            let currentNumber = 1;
+
+            vehicles.forEach(v => {
+                // Every row — including RIT 2 — gets the next sequential number
+                let row;
+                if (dataType === 'insentif-mel') {
+                    row = `${currentNumber}. ${v.nopol} | ${v.drivers} | ${v.combinedValue}\n`;
+                } else {
+                    row = `${currentNumber}. ${v.nopol} | ${v.drivers} | ${v.value1} | ${v.value2}\n`;
+                }
+                currentNumber++;
+                output += row;
+            });
+
+            byId('outputBox').textContent = output;
+            byId('successMsg').innerHTML = '<div class="success">✓ Conversion successful! Found ' + vehicles.length + ' vehicle(s)</div>';
+        }
+
+        function convertFromJson() {
+            const input = byId('inputJson').value.trim();
+            const errorMsg = byId('errorMsgJson');
+
+            clearMessages();
+            byId('outputBox').textContent = '';
+
+            if (!input) {
+                errorMsg.innerHTML = '<div class="error">⚠️ Please paste JSON data in the input box</div>';
+                return;
+            }
+
+            try {
+                const data = JSON.parse(input);
+                if (!Array.isArray(data)) {
+                    throw new Error('JSON must be an array');
+                }
+                const specificNopols = parseSpecificNopolInput();
+                const vehicles = currentMode === 'medical' ? processData(data, currentDataType, specificNopols) : processDataIndustrial(data);
+                displayOutput(vehicles, currentMode === 'medical' ? currentDataType : 'solar-tol');
+            } catch (e) {
+                errorMsg.innerHTML = '<div class="error">⚠️ Error: ' + e.message + '</div>';
+            }
+        }
+
+        // File Upload Handler
+        const fileUpload = byId('fileUpload');
+
+        fileUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUpload.classList.add('dragover');
+        });
+
+        fileUpload.addEventListener('dragleave', () => {
+            fileUpload.classList.remove('dragover');
+        });
+
+        fileUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUpload.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            const fileName = byId('fileName');
+            fileName.innerHTML = '<div class="file-name">📄 ' + file.name + '</div>';
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+
+                // Rincian date comes from the file itself (cell A2)
+                excelRincianDate = formatExcelDate(firstSheet['A2']);
+
+                // Get raw data without headers
+                const rawData = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: '' });
+
+                // Dynamically detect TOTAL column
+                const TOTAL_KEYWORDS_XL = ['Rincian', 'Solar', 'Tol', 'Insentif', 'Mel', 'Parkir',
+                    'Admin TF', 'Supir/Kenek 2 RIT', 'Solar tol bongkar'];
+                function detectTotalColumnXL(rows) {
+                    const tally = {};
+                    for (let i = 0; i < rows.length; i++) {
+                        const row = rows[i];
+                        for (let c = 0; c < row.length; c++) {
+                            const cell = String(row[c] || '').trim();
+                            if (TOTAL_KEYWORDS_XL.some(kw => cell === kw || cell.startsWith(kw))) {
+                                tally[c] = (tally[c] || 0) + 1;
+                            }
+                        }
+                    }
+                    let bestCol = 5;
+                    let bestCount = 0;
+                    for (const [col, count] of Object.entries(tally)) {
+                        if (count > bestCount) { bestCount = count; bestCol = parseInt(col); }
+                    }
+                    return bestCol;
+                }
+                const xlTotalCol = detectTotalColumnXL(rawData);
+                const xlPengajuanCol = xlTotalCol + 1;
+                const xlRealisasiCol = xlTotalCol - 2 > 0 ? xlTotalCol - 2 : xlTotalCol - 1;
+
+                excelData = [];
+                for (let i = 0; i < rawData.length; i++) {
+                    const row = rawData[i];
+                    const obj = {
+                        'MOBIL': String(row[0] || ''),
+                        'TUJUAN': String(row[1] || ''),
+                        'KM': String(row[2] || ''),
+                        '  Nominal \nRealisasi ': String(row[xlRealisasiCol] || ''),
+                        '  Nominal Realisasi ': '',
+                        'TOTAL': String(row[xlTotalCol] || ''),
+                        '  Nominal \nPengajuan ': String(row[xlPengajuanCol] || '')
+                    };
+                    excelData.push(obj);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function convertFromExcel() {
+            const errorMsg = byId('errorMsgExcel');
+
+            clearMessages();
+            byId('outputBox').textContent = '';
+
+            if (!excelData) {
+                errorMsg.innerHTML = '<div class="error">⚠️ Please upload an Excel file first</div>';
+                return;
+            }
+
+            try {
+                const specificNopols = parseSpecificNopolInput();
+                const vehicles = currentMode === 'medical' ? processData(excelData, currentDataType, specificNopols) : processDataIndustrial(excelData);
+                displayOutput(vehicles, currentMode === 'medical' ? currentDataType : 'solar-tol');
+            } catch (e) {
+                errorMsg.innerHTML = '<div class="error">⚠️ Error: ' + e.message + '</div>';
+            }
+        }
+
+        function convertFromSpreadsheet() {
+            const input = byId('inputSpreadsheet').value.trim();
+            const errorMsg = byId('errorMsgSpreadsheet');
+
+            clearMessages();
+            byId('outputBox').textContent = '';
+
+            if (!input) {
+                errorMsg.innerHTML = '<div class="error">⚠️ Please paste spreadsheet data</div>';
+                return;
+            }
+
+            try {
+                // Parse TSV (tab-separated) data from spreadsheet
+                const parsed = Papa.parse(input, {
+                    delimiter: '\t',
+                    skipEmptyLines: false
+                });
+
+                const rows = parsed.data;
+
+                // Dynamically detect which column holds the TOTAL labels (Rincian,
+                // Solar, Tol, Insentif, ...) — see global detectTotalColumn().
+                const totalCol = detectTotalColumn(rows);
+                const pengajuanCol = totalCol + 1;
+                // Realisasi is typically 2 cols before TOTAL (the last Rp column before TOTAL)
+                const realisasiCol = totalCol - 2 > 0 ? totalCol - 2 : totalCol - 1;
+
+                const data = [];
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    const obj = {
+                        'MOBIL': row[0] || '',
+                        'TUJUAN': row[1] || '',
+                        'KM': row[2] || '',
+                        '  Nominal \nRealisasi ': row[realisasiCol] || '',
+                        '  Nominal Realisasi ': '',
+                        'TOTAL': row[totalCol] || '',
+                        '  Nominal \nPengajuan ': row[pengajuanCol] || ''
+                    };
+                    // Carry over any extra columns for industrial format
+                    for (let c = pengajuanCol + 1; c < row.length; c++) {
+                        obj['col_' + c] = row[c] || '';
+                    }
+                    data.push(obj);
+                }
+
+                const specificNopols = parseSpecificNopolInput();
+                const vehicles = currentMode === 'medical' ? processData(data, currentDataType, specificNopols) : processDataIndustrial(data);
+                displayOutput(vehicles, currentMode === 'medical' ? currentDataType : 'solar-tol');
+            } catch (e) {
+                errorMsg.innerHTML = '<div class="error">⚠️ Error: ' + e.message + '</div>';
+            }
+        }
+
+        function convertSpreadsheetToJson() {
+            const input = byId('inputSpreadsheetToJson').value.trim();
+            const errorMsg = byId('errorMsgToJson');
+            const outputBox = byId('outputBoxJson');
+
+            errorMsg.innerHTML = '';
+            byId('successMsgJson').innerHTML = '';
+            outputBox.textContent = '';
+
+            if (!input) {
+                errorMsg.innerHTML = '<div class="error">⚠️ Please paste spreadsheet data</div>';
+                return;
+            }
+
+            try {
+                // Parse TSV (tab-separated) data from spreadsheet
+                const parsed = Papa.parse(input, {
+                    delimiter: '\t',
+                    skipEmptyLines: false
+                });
+
+                const rows = parsed.data;
+
+                // Dynamically detect which column holds the TOTAL labels
+                // (Rincian, Solar, Tol, Insentif, Mel, Parkir, Admin TF, ...).
+                // The Nominal Pengajuan value always sits in the column to its right,
+                // so the converter no longer cares how many leading columns there are.
+                const totalCol = detectTotalColumn(rows);
+                const pengajuanCol = totalCol + 1;
+                const realisasiCol = totalCol - 2 > 0 ? totalCol - 2 : totalCol - 1;
+
+                // Convert to JSON format — keyed off the detected columns
+                const jsonData = [];
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    const obj = {
+                        'MOBIL': row[0] || '',
+                        'TUJUAN': row[1] || '',
+                        'KM': row[2] || '',
+                        '  Nominal \nRealisasi ': row[realisasiCol] || '',
+                        '  Nominal Realisasi ': '',
+                        'TOTAL': row[totalCol] || '',
+                        '  Nominal \nPengajuan ': row[pengajuanCol] || ''
+                    };
+                    // Carry over any extra trailing columns (industrial format)
+                    for (let c = pengajuanCol + 1; c < row.length; c++) {
+                        obj['col_' + c] = row[c] || '';
+                    }
+                    jsonData.push(obj);
+                }
+
+                // Display as formatted JSON
+                const jsonOutput = JSON.stringify(jsonData, null, 2);
+                outputBox.textContent = jsonOutput;
+                byId('successMsgJson').innerHTML = '<div class="success">✓ Successfully converted to JSON! (' + jsonData.length + ' rows)</div>';
+
+            } catch (e) {
+                errorMsg.innerHTML = '<div class="error">⚠️ Error: ' + e.message + '</div>';
+            }
+        }
+
+        function copyToClipboard(text, successMsg, successText, autoHide) {
+            function doFallbackCopy() {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.top = '0';
+                ta.style.left = '0';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.focus();
+                ta.select();
+                let ok = false;
+                try { ok = document.execCommand('copy'); } catch (e) { }
+                document.body.removeChild(ta);
+                return ok;
+            }
+            function onSuccess() {
+                successMsg.innerHTML = '<div class="success">✓ ' + successText + '</div>';
+                if (autoHide) setTimeout(() => { successMsg.innerHTML = ''; }, 3000);
+            }
+            function onFail(reason) {
+                if (doFallbackCopy()) { onSuccess(); }
+                else { successMsg.innerHTML = '<div class="error">⚠️ Failed to copy: ' + reason + '</div>'; }
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(onSuccess).catch(err => onFail(err.message));
+            } else if (doFallbackCopy()) {
+                onSuccess();
+            } else {
+                successMsg.innerHTML = '<div class="error">⚠️ Copy not supported in this browser.</div>';
+            }
+        }
+
+        function copyJsonOutput() {
+            const output = byId('outputBoxJson').textContent;
+            const successMsg = byId('successMsgJson');
+            if (!output) {
+                successMsg.innerHTML = '<div class="error">⚠️ Nothing to copy. Please convert data first.</div>';
+                return;
+            }
+            copyToClipboard(output, successMsg, 'JSON copied to clipboard!', true);
+        }
+
+        function clearToJson() {
+            byId('inputSpreadsheetToJson').value = '';
+            byId('outputBoxJson').textContent = '';
+            byId('errorMsgToJson').innerHTML = '';
+            byId('successMsgJson').innerHTML = '';
+        }
+
+        function copyOutput() {
+            const output = byId('outputBox').textContent;
+            const successMsg = byId('successMsg');
+            if (!output) {
+                successMsg.innerHTML = '<div class="error">⚠️ Nothing to copy. Please convert data first.</div>';
+                return;
+            }
+            copyToClipboard(output, successMsg, 'Copied to clipboard!', currentTab !== 'to-json');
+        }
+
+        function clearAll() {
+            byId('inputJson').value = '';
+            byId('inputSpreadsheet').value = '';
+            byId('inputSpreadsheetToJson').value = '';
+            byId('specificNopolInput').value = '';
+            byId('fileInput').value = '';
+            byId('fileName').innerHTML = '';
+            byId('outputBox').textContent = '';
+            byId('outputBoxJson').textContent = '';
+            excelData = null;
+            excelRincianDate = '';
+            clearMessages();
+        }
+
+        // Initialize visibility on page load
+        updateDataTypeSelectorVisibility();
+    
+window.EX = {handleFileUpload:(typeof handleFileUpload==="function"?handleFileUpload:undefined),switchDataType:(typeof switchDataType==="function"?switchDataType:undefined),switchMode:(typeof switchMode==="function"?switchMode:undefined),clearAll:(typeof clearAll==="function"?clearAll:undefined),clearToJson:(typeof clearToJson==="function"?clearToJson:undefined),convertFromExcel:(typeof convertFromExcel==="function"?convertFromExcel:undefined),convertFromJson:(typeof convertFromJson==="function"?convertFromJson:undefined),convertFromSpreadsheet:(typeof convertFromSpreadsheet==="function"?convertFromSpreadsheet:undefined),convertSpreadsheetToJson:(typeof convertSpreadsheetToJson==="function"?convertSpreadsheetToJson:undefined),copyJsonOutput:(typeof copyJsonOutput==="function"?copyJsonOutput:undefined),copyOutput:(typeof copyOutput==="function"?copyOutput:undefined),switchTab:(typeof switchTab==="function"?switchTab:undefined),openFilePicker:(typeof openFilePicker==="function"?openFilePicker:undefined)};
+})();
+  </script>
+  <script data-app="rincianharian">
+(function(){
+var R = document.getElementById("panel-rincianharian");
+function byId(id){ return R.querySelector('[id="'+id+'"]'); }
+
+/* ===================== PARSER ===================== */
+const MONTHS={januari:1,februari:2,maret:3,april:4,mei:5,juni:6,juli:7,agustus:8,september:9,oktober:10,november:11,desember:12};
+const MN=['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const UPYEAR=2026;
+const ZW=new RegExp('[\\u200B-\\u200F\\u2060\\uFEFF\\uFE0F\\u2705\\u2714\\u2611\\u2713]','g');
+const DASH=new RegExp('[\\u2013\\u2014]');
+const DASHG=new RegExp('[\\u2013\\u2014]','g');
+const DASHHY=new RegExp('[-\\u2013\\u2014]','g');
+
+function num(s){return parseInt(String(s).replace(/[^\d]/g,''),10)||0;}
+
+function detectDate(text){
+  let m=text.match(/(\d{1,2})\s+(januari|februari|maret|april|mei|juni|juli|agustus|september|oktober|november|desember)\w*\s+(\d{4})/i);
+  if(m) return (+m[1])+' '+MN[MONTHS[m[2].toLowerCase()]]+' '+m[3];
+  m=text.match(/\b(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?\b/);
+  if(m){const d=+m[1],mo=+m[2];let y=m[3]?(+m[3]<100?2000+ +m[3]:+m[3]):UPYEAR;if(d>=1&&d<=31&&mo>=1&&mo<=12) return d+' '+MN[mo]+' '+y;}
+  m=text.match(/\b(\d{2})(\d{2})(\d{2})\b/);
+  if(m){const d=+m[1],mo=+m[2],y=2000+ +m[3];if(d>=1&&d<=31&&mo>=1&&mo<=12) return d+' '+MN[mo]+' '+y;}
+  return null;
+}
+
+function categorize(base,text){
+  const t=(text||'').toLowerCase();
+  if(/\bpadang\b/.test(t)) return 'Padang';
+  if(/\bikn\b/.test(t)) return 'IKN';
+  if(/nalangin/.test(t)) return 'Miscellaneous';
+  return base;
+}
+
+function extractNominal(text){
+  const firstIdx=text.search(/\d{1,3}(?:\.\d{3})+/);
+  const eq=text.match(/=\s*(\d{1,3}(?:\.\d{3})+)/);
+  let n=0;
+  if(eq) n=num(eq[1]);
+  else { const all=[...text.matchAll(/\d{1,3}(?:\.\d{3})+/g)]; if(all.length) n=num(all[all.length-1][0]); }
+  const rest=(firstIdx>=0?text.slice(0,firstIdx):text).trim();
+  return {n,rest};
+}
+
+function cleanPlate(np){
+  const plates=[...np.matchAll(/B\s?\d{3,4}/g)];
+  if(plates.length>=2) np=np.slice(plates[plates.length-1].index).trim();
+  return np;
+}
+
+function parsePipe(body){
+  const p=body.split('|').map(s=>s.trim()).filter(s=>s.length);
+  if(!p.length) return null;
+  let nopol=cleanPlate(p[0]||''), nama=p[1]||'', ket='', nominal=0;
+  if(p.length>=3){ const e=extractNominal(p[p.length-1]); if(e.n){nominal=e.n; ket=p.slice(2,-1).join(' ');} else {ket=p.slice(2).join(' ');} }
+  return {nopol,nama,ket,nominal,base:'Medis'};
+}
+
+function parseDash(body){
+  const parts=body.split(DASHG).map(s=>s.trim()).filter(s=>s.length);
+  if(parts.length<2) return null;
+  let nopol=cleanPlate(parts[0]||''), nama=parts[1]||'', field=parts.slice(2).join(' - ');
+  const e=extractNominal(field);
+  return {nopol,nama,ket:e.rest,nominal:e.n,base:'Industri'};
+}
+
+function parseDriver(body){
+  const m=body.match(/^(?:B\s*)?(\d{3,4}[A-Za-z]*)\s+(.*?)\s+driver\s+(.+)$/i);
+  if(!m) return null;
+  let nopol=m[1], ket=m[2].trim(), namePart=m[3].trim();
+  const e=extractNominal(namePart); let nama=e.n?e.rest:namePart;
+  const par=nama.match(/^(.*?)\s*(\(.*\))\s*$/);
+  if(par){ nama=par[1].trim(); ket=(ket?ket+' ':'')+par[2]; }
+  return {nopol,nama,ket,nominal:e.n,base:'Industri'};
+}
+
+function parseGeneralEntry(body){
+  const e=extractNominal(body);
+  let text2=e.rest, nopol='', ket='';
+  const dm=text2.match(/(?:B\s?)?(\d{3,4})/);
+  if(dm){ nopol=dm[0].trim(); ket=(text2.slice(0,dm.index)+' '+text2.slice(dm.index+dm[0].length)).replace(/\s+/g,' ').trim(); }
+  else { ket=text2.trim(); }
+  if(!nopol&&!ket) return null;
+  return {nopol,nama:'',ket,nominal:e.n,base:'Industri'};
+}
+
+function isNoise(l){
+  l=l.toLowerCase().trim();
+  return /^berikut adalah daftar/.test(l)||/^pengajuan\s+uj\s+driver/.test(l)||/^jadwal\b/.test(l)
+    ||/^box\b/.test(l)||/^nopol\s*\|/.test(l)||/^tanggal\b/.test(l)
+    ||(/^(senin|selasa|rabu|kamis|jumat|sabtu|minggu)\b/.test(l)&&!/\d{3,4}/.test(l));
+}
+
+function clean(line){ return line.replace(ZW,'').trim(); }
+
+function pushPadang(pre,nominal,cur,rows){
+  pre=pre.replace(/^\s*\d{1,3}[.)]\s*/,'').replace(/^[^A-Za-z0-9]+/,'').trim();
+  if(!pre&&!nominal) return;
+  let nopol='',nama='',ket='';
+  const pm=pre.match(/B\s?\d{3,4}[A-Za-z]*|\b\d{3,4}\b/);
+  if(pm){ nopol=pm[0].replace(/\s+/g,' ').trim(); nama=(pre.slice(0,pm.index)+' '+pre.slice(pm.index+pm[0].length)).replace(DASHHY,' ').replace(/\s+/g,' ').trim(); }
+  else { ket=pre; }
+  rows.push({date:cur,nopol,nama,nominal,ket,cat:categorize('Padang',[nopol,nama,ket].join(' '))});
+}
+function parsePadang(block,cur,rows){
+  let t=clean(block.replace(/PADANG[^\n]*/i,'  '));
+  const re=/\d{1,3}(?:\.\d{3})+/g; let m,last=0,found=false;
+  while((m=re.exec(t))){ found=true; pushPadang(t.slice(last,m.index),num(m[0]),cur,rows); last=re.lastIndex; }
+  if(!found){ for(let raw of t.split('\n')){ const line=clean(raw); if(line&&!isNoise(line)) pushPadang(line,0,cur,rows); } }
+}
+
+function parseKm(block,cur,rows){
+  const re=/(\d{4})\s+tgl\.?\s*(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?\s+([A-Za-z]+)/gi; let m;
+  while((m=re.exec(block))){
+    const day=+m[2], mo=+m[3]; let y=m[4]?(+m[4]<100?2000+ +m[4]:+m[4]):UPYEAR;
+    const date=(mo>=1&&mo<=12)?day+' '+MN[mo]+' '+y:cur;
+    rows.push({date,nopol:m[1],nama:m[5],nominal:400000,ket:'insentif km',cat:'Medis'});
+  }
+}
+
+function parseGeneral(block,cur,rows){
+  let t=block;
+  t=t.replace(/Berikut adalah daftar[\s\S]*?:/i,'  ');
+  t=t.replace(/Pengajuan\s+UJ\s+Driver[^\n]*/ig,'  ');
+  t=t.replace(/Nopol\s*\|\s*Nama[^|]*\|\s*Total[^|]*?Mel/gi,'  ');
+  t=t.replace(/JADWAL\s+PENGANGKUTAN[^\n]*/ig,'  ');
+  t=t.replace(/\b\d{1,2}\s+(?:januari|februari|maret|april|mei|juni|juli|agustus|september|oktober|november|desember)\w*\s+\d{4}\b/gi,'  ');
+  for(let raw of t.split('\n')){
+    let line=clean(raw); if(!line||isNoise(line)) continue;
+    const hadNum=/^\s*\d{1,3}[.)]/.test(line);
+    let body=line.replace(/^\s*\d{1,3}[.)]\s*/,'').trim(); if(!body) continue;
+    const looks=hadNum||/\d{3,4}/.test(body)||DASH.test(body)||body.includes('|')||/\bdriver\b/i.test(body);
+    if(!looks) continue;
+    let r=null;
+    if(body.includes('|')) r=parsePipe(body);
+    else if(DASH.test(body)) r=parseDash(body);
+    else if(/\bdriver\b/i.test(body)) r=parseDriver(body);
+    else r=parseGeneralEntry(body);
+    if(!r) continue;
+    const rit=(r.nopol||'').match(/\(rit\s*\d\)/i);
+    if(rit){ r.ket=(r.ket?r.ket+' ':'')+rit[0]; r.nopol=r.nopol.replace(/\(rit\s*\d\)/i,'').trim(); }
+    rows.push({date:cur,nopol:r.nopol||'',nama:r.nama||'',nominal:r.nominal||0,ket:r.ket||'',cat:categorize(r.base,[r.nopol,r.nama,r.ket].join(' '))});
+  }
+}
+
+function parseText(raw){
+  let s=raw.replace(/\r\n?/g,'\n').replace(ZW,'');
+  s=s.replace(/(\d(?:\.\d{3})+)(\d{1,3}\.\s)/g,'$1\n$2');
+  s=s.replace(/(?=\bBerikut adalah daftar)/gi,'\n\n');
+  s=s.replace(/(?=Pengajuan\s+UJ\s+Driver)/gi,'\n\n');
+  s=s.replace(/(?=JADWAL\s+PENGANGKUTAN)/gi,'\n\n');
+  s=s.replace(/(?=Bantu cek km)/gi,'\n\n');
+  s=s.replace(/\n[ \t]*(PADANG\b)/g,'\n\n$1');
+  s=s.replace(/(?=Nopol\s*\|\s*Nama)/gi,'\n\n');
+  const blocks=s.split(/\n\s*\n+/);
+  let cur=''; const rows=[];
+  for(const block of blocks){
+    if(!block.trim()) continue;
+    const d=detectDate(block); if(d) cur=d;
+    if(/^\s*padang\b/im.test(block)) parsePadang(block,cur,rows);
+    else if(/cek km|km lagi/i.test(block)) parseKm(block,cur,rows);
+    else parseGeneral(block,cur,rows);
+  }
+  return rows;
+}
+
+/* ===================== UI ===================== */
+const $=id=>byId(id);
+const fmt=n=>'Rp '+(n||0).toLocaleString('id-ID');
+const fmtNum=n=>(n?n.toLocaleString('id-ID'):'');
+
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function render(rows){
+  const tb=$('tbody'); tb.innerHTML='';
+  if(!rows.length){
+    tb.innerHTML='<tr><td colspan="8" class="empty">Tidak ada data terdeteksi. Periksa kembali teks Anda.</td></tr>';
+  } else {
+    rows.forEach((r,i)=>tb.appendChild(rowEl(r,i)));
+  }
+  $('resultCard').style.display='block';
+  recalc();
+}
+function rowEl(r,i){
+  const tr=document.createElement('tr');
+  tr.innerHTML='<td class="idx">'+(i+1)+'</td>'+
+    '<td contenteditable>'+esc(r.date)+'</td>'+
+    '<td contenteditable>'+esc(r.nopol)+'</td>'+
+    '<td contenteditable>'+esc(r.nama)+'</td>'+
+    '<td contenteditable class="num">'+fmtNum(r.nominal)+'</td>'+
+    '<td contenteditable>'+esc(r.ket)+'</td>'+
+    '<td contenteditable class="cat">'+esc(r.cat||'Industri')+'</td>'+
+    '<td class="del" title="Hapus baris">✕</td>';
+  tr.querySelector('.del').onclick=()=>{tr.remove();reindex();recalc();};
+  const catCell=tr.querySelector('.cat'); paintCat(catCell);
+  catCell.addEventListener('input',()=>paintCat(catCell));
+  tr.querySelectorAll('td[contenteditable]').forEach(td=>td.addEventListener('input',recalc));
+  return tr;
+}
+function reindex(){[...$('tbody').querySelectorAll('tr')].forEach((tr,i)=>{const c=tr.querySelector('.idx');if(c)c.textContent=i+1;});}
+function paintCat(td){const v=td.textContent.trim().toLowerCase();['is-medis','is-industri','is-padang','is-ikn','is-misc'].forEach(c=>td.classList.remove(c));const map={medis:'is-medis',industri:'is-industri',padang:'is-padang',ikn:'is-ikn',miscellaneous:'is-misc'};if(map[v])td.classList.add(map[v]);}
+function parseMoney(s){const n=parseInt((s||'').replace(/[^\d]/g,''),10);return isNaN(n)?0:n;}
+function recalc(){
+  const trs=[...$('tbody').querySelectorAll('tr')].filter(t=>t.querySelector('.num'));
+  let sum=0; trs.forEach(t=>sum+=parseMoney(t.children[4].textContent));
+  $('cnt').textContent=trs.length; $('sum').textContent=fmt(sum);
+}
+function collect(){
+  return [...$('tbody').querySelectorAll('tr')].filter(t=>t.querySelector('.num')).map(t=>({
+    date:t.children[1].textContent.trim(),
+    nopol:t.children[2].textContent.trim(),
+    nama:t.children[3].textContent.trim(),
+    nominal:parseMoney(t.children[4].textContent),
+    ket:t.children[5].textContent.trim(),
+    cat:t.children[6].textContent.trim()
+  }));
+}
+function toast(msg){const e=$('toast');e.textContent=msg;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1800);}
+
+/* events */
+$('convert').onclick=()=>{render(parseText($('input').value));if($('input').value.trim())toast('Konversi selesai');};
+$('clear').onclick=()=>{$('input').value='';$('tbody').innerHTML='';$('resultCard').style.display='none';};
+$('addRow').onclick=()=>{const tb=$('tbody');if(tb.querySelector('.empty'))tb.innerHTML='';tb.appendChild(rowEl({date:'',nopol:'',nama:'',nominal:0,ket:''},tb.children.length));reindex();recalc();};
+$('files').onchange=async e=>{
+  const fs=[...e.target.files]; if(!fs.length) return;
+  const parts=[];
+  for(const f of fs){ parts.push(await f.text()); }
+  const joined=parts.join('\n\n');
+  $('input').value = $('input').value.trim() ? $('input').value+'\n\n'+joined : joined;
+  render(parseText($('input').value));
+  toast(fs.length+' file dimuat');
+  e.target.value='';
+};
+
+/* exports */
+const HEAD=['Tanggal','No. Polisi','Nama Supir-Kenek','Nominal','Keterangan','Kategori'];
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);}
+$('csv').onclick=()=>{
+  const rows=collect(); if(!rows.length)return toast('Belum ada data');
+  const q=s=>'"'+String(s).replace(/"/g,'""')+'"';
+  let out=HEAD.map(q).join(',')+'\n';
+  rows.forEach(r=>out+=[q(r.date),q(r.nopol),q(r.nama),(r.nominal||''),q(r.ket),q(r.cat)].join(',')+'\n');
+  dl(new Blob(['﻿'+out],{type:'text/csv;charset=utf-8'}),'data-pengangkutan.csv');
+  toast('CSV diunduh');
+};
+$('xlsx').onclick=()=>{
+  const rows=collect(); if(!rows.length)return toast('Belum ada data');
+  let h='<table border="1"><tr>'+HEAD.map(x=>'<th>'+esc(x)+'</th>').join('')+'</tr>';
+  rows.forEach(r=>{h+='<tr><td>'+esc(r.date)+'</td><td>'+esc(r.nopol)+'</td><td>'+esc(r.nama)+
+    '</td><td>'+(r.nominal||'')+'</td><td>'+esc(r.ket)+'</td><td>'+esc(r.cat)+'</td></tr>';});
+  h+='</table>';
+  const doc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body>'+h+'</body></html>';
+  dl(new Blob(['﻿'+doc],{type:'application/vnd.ms-excel'}),'data-pengangkutan.xls');
+  toast('Excel diunduh');
+};
+$('copy').onclick=async()=>{
+  const rows=collect(); if(!rows.length)return toast('Belum ada data');
+  let out=HEAD.join('\t')+'\n';
+  rows.forEach(r=>out+=[r.date,r.nopol,r.nama,(r.nominal||''),r.ket,r.cat].join('\t')+'\n');
+  try{await navigator.clipboard.writeText(out);toast('Disalin — tinggal tempel (Ctrl+V) di Excel');}
+  catch(e){const ta=document.createElement('textarea');ta.value=out;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Disalin ke clipboard');}
+};
+})();
+  </script>
 </body>
 </html>
