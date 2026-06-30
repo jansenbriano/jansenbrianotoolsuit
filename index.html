@@ -695,12 +695,21 @@
             gap: 0.75rem;
             z-index: 1000;
             transform: translateY(150%);
-            transition: transform var(--transition-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform var(--transition-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity var(--transition-speed) ease;
         }
 
         #panel-do .toast.show {
             transform: translateY(0);
+            opacity: 1;
         }
+
+        #panel-do .toast.error {
+            border-color: var(--accent-danger);
+            color: var(--accent-danger);
+        }
+        #panel-do .toast.error i { color: var(--accent-danger); }
 
         #panel-do .toast i {
             color: var(--accent-success);
@@ -2221,8 +2230,14 @@ function byId(id){ return R.querySelector('[id="'+id+'"]'); }
 
         // Common Car Types in Indonesia (Keywords for parsing)
         const CAR_TYPES = [
-            'Grand Max', 'Gran Max', 'Blind Van', 'Box', 'Traga', 'L300', 
-            'Engkel', 'Double', 'CDE', 'CDD', 'Fuso', 'Tronton', 'Pick Up', 'Pickup', 'Wingbox'
+            // multi-word / specific types FIRST so they win over shorter ones (e.g. "TRAILER WB" before "WB")
+            'Trailer Wingbox', 'TRAILER WB', 'Dump Truck', 'DumpTruck',
+            'Head Triller', 'HeadTriller', 'Head Trailer', 'Colt Diesel',
+            'Grand Max', 'Gran Max', 'Blind Van', 'Pick Up', 'Pickup',
+            // single-word types
+            'ITANK', 'TWB', 'TANK', 'WTRON', 'WB', 'LONG', 'CDD', 'CDE',
+            'Fuso', 'Tronton', 'Wingbox', 'Engkel', 'Double', 'Box', 'Traga',
+            'L-300', 'L300', 'Long', 'Trailer'
         ];
 
         // File upload click handlers
@@ -2351,15 +2366,25 @@ function byId(id){ return R.querySelector('[id="'+id+'"]'); }
                     return;
                 }
 
-                // 2. Extract Jenis Mobil using known list
+                // 2. Extract Jenis Mobil: the vehicle type keyword sits right after the plate.
+                let working = line.replace(/\s+/g, ' ').trim();
+                const escType = t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                 for (const type of CAR_TYPES) {
-                    const typeRegex = new RegExp(`\\b${type}\\b`, 'i');
-                    if (typeRegex.test(line)) {
+                    const reStart = new RegExp('^' + escType(type) + '\\b', 'i');
+                    if (reStart.test(working)) {
                         carType = type;
-                        line = line.replace(typeRegex, ' ');
+                        working = working.replace(reStart, '').trim();
                         break;
                     }
                 }
+                // last resort: type appears somewhere in the remaining text
+                if (!carType) {
+                    for (const type of CAR_TYPES) {
+                        const re = new RegExp('\\b' + escType(type) + '\\b', 'i');
+                        if (re.test(working)) { carType = type; working = working.replace(re, ' '); break; }
+                    }
+                }
+                line = working;
 
                 // 3. Clean up the remaining line to determine Client Location (Lokasi Klien)
                 let remaining = line
@@ -2548,14 +2573,64 @@ function byId(id){ return R.querySelector('[id="'+id+'"]'); }
                 outputText += line.join('\t') + '\n';
             });
 
-            navigator.clipboard.writeText(outputText)
-                .then(() => {
-                    showToast('Tabel berhasil disalin ke clipboard! Siap dipaste ke Excel.');
-                })
-          
-                .catch(() => { alert('Gagal menyalin ke clipboard.'); });
+            const copyOk = () => showToast('Tabel berhasil disalin ke clipboard! Siap dipaste ke Excel.');
+            const copyFallback = () => {
+                const ta = document.createElement('textarea');
+                ta.value = outputText; ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.opacity = '0';
+                document.body.appendChild(ta); ta.focus(); ta.select();
+                let done = false;
+                try { done = document.execCommand('copy'); } catch (e) {}
+                document.body.removeChild(ta);
+                if (done) copyOk(); else alert('Gagal menyalin ke clipboard.');
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(outputText).then(copyOk).catch(copyFallback);
+            } else {
+                copyFallback();
+            }
         });
     
+// Export to CSV (restored — handler was missing from the original truncated file)
+btnExport.addEventListener('click', () => {
+    if (!extractedData.length) {
+        showToast('Tidak ada data untuk diekspor!', 'error');
+        return;
+    }
+    const headers = ['Tanggal', 'Nopol', 'Jenis Mobil', 'Lokasi Klien', 'Solar', 'Tol', 'Insentif', 'Mel', 'DL', 'KM'];
+    const csvEsc = v => {
+        const s = (v == null ? '' : String(v));
+        return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    };
+    let csv = headers.map(csvEsc).join(',') + '\n';
+    extractedData.forEach(row => {
+        csv += [row.tanggal, row.nopol, row.carType, row.clientLocation,
+                row.solar, row.tol, row.insentif, row.mel, row.dl, row.km]
+               .map(csvEsc).join(',') + '\n';
+    });
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'data-ekstraksi-' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast('CSV berhasil diunduh!');
+});
+
+// Toast notification (restored — was missing from the original truncated file)
+function showToast(message, type) {
+    const t = byId('toast');
+    if (!t) return;
+    const msgEl = byId('toastMessage');
+    if (msgEl) msgEl.textContent = message; else t.textContent = message;
+    t.classList.toggle('error', type === 'error');
+    t.classList.add('show');
+    clearTimeout(t._hideTimer);
+    t._hideTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
 window.DO = {updateCell:(typeof updateCell==="function"?updateCell:undefined),deleteRow:(typeof deleteRow==="function"?deleteRow:undefined)};
 })();
   </script>
